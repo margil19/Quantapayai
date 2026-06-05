@@ -26,7 +26,7 @@ const GAPS = [
   {
     dataPoint: 'Custom HRIS deal contingency',
     why: 'Is the $900K deal already signed and waiting on the integration, or is the integration a condition of signing?',
-    shift: 'If integration is a deal condition, the commercial conversation about services pricing must happen in Q1 — not Q2.',
+    shift: 'If integration is a deal condition, the commercial conversation must happen in Q1 — not Q2. The answer also determines whether buying an off-the-shelf connector is even an option.',
     affects: 'Position 5 urgency',
   },
   {

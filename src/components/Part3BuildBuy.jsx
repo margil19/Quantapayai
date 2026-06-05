@@ -3,8 +3,8 @@ import { useState } from 'react'
 const DECISIONS = {
   BUILD: { label: 'Build', bg: 'bg-emerald-500', text: 'text-white', border: 'border-emerald-500', light: 'bg-emerald-50 border-emerald-200' },
   PARTNER: { label: 'Partner', bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-500', light: 'bg-teal-50 border-teal-200' },
-  PARTNER_CAUTION: { label: 'Partner — with caution', bg: 'bg-amber-500', text: 'text-white', border: 'border-amber-500', light: 'bg-amber-50 border-amber-200' },
-  DO_NOT_BUILD: { label: 'Do Not Build', bg: 'bg-red-500', text: 'text-white', border: 'border-red-500', light: 'bg-red-50 border-red-200' },
+  PARTNER_CAUTION: { label: 'Partner — with caution', bg: 'bg-amber-500 text-white', text: 'text-white', border: 'border-amber-500', light: 'bg-amber-50 border-amber-200' },
+  BUY: { label: 'Buy', bg: 'bg-amber-400 text-dark', text: 'text-dark', border: 'border-amber-400', light: 'bg-amber-50 border-amber-200' },
 }
 
 const ROWS = [
@@ -43,10 +43,10 @@ const ROWS = [
   {
     hris: 'Custom Proprietary HRIS',
     signal: '$900K · single deal',
-    decision: 'DO_NOT_BUILD',
+    decision: 'BUY',
     apiQuality: 'Unknown — proprietary, no standard API',
     competitiveRisk: 'None',
-    rationale: 'A one-off custom integration for a single customer becomes permanent technical debt with zero residual value. If the customer churns, the integration is worthless. The right response: offer a standard CSV/SFTP connector, or price the custom build as a professional services engagement with a maintenance contract — not a product investment.',
+    rationale: "Before writing a single line of code, check whether an off-the-shelf connector already exists for this system. If one does, buy it — a $900K deal doesn't justify building and maintaining a custom integration from scratch for one customer. If no connector exists, treat this as a scoped commercial engagement with a clear price and end date, not an open-ended product feature.",
   },
 ]
 

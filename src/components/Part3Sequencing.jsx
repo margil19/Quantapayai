@@ -50,10 +50,10 @@ const ITEMS = [
   {
     pos: 5,
     name: 'Custom Proprietary HRIS',
-    decision: 'Services / CSV',
-    decisionColor: 'bg-red-500 text-white',
+    decision: 'Buy',
+    decisionColor: 'bg-amber-400 text-dark',
     timeline: 'Q2 · commercial conversation first',
-    why: 'Have the pricing conversation before any eng work starts. CSV/SFTP connector or professional services — not a product build.',
+    why: "Check if a connector already exists before anything else. If yes, buy it. If not, scope and price it as a one-time engagement — not a product feature.",
     revenueAtRisk: '$900K',
     revenueLabel: 'deal structure matters',
     revenueColor: 'bg-gray-100 text-gray-500 border-gray-200',

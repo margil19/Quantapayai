@@ -324,16 +324,8 @@ export default function Part4FieldMapping() {
                 Save and continue later
               </button>
             )}
-            <button
-              disabled={hasBlocking}
-              className={`text-sm font-semibold rounded-xl px-5 py-2.5 transition-colors ${
-                hasBlocking
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-              title={hasBlocking ? 'Resolve blocking issues before previewing' : ''}
-            >
-              {hasBlocking ? 'Preview with real data — blocked ⛔' : 'Preview with real data →'}
+            <button className="text-sm font-semibold rounded-xl px-5 py-2.5 transition-colors bg-blue-600 text-white hover:bg-blue-700">
+              Preview with real data →
             </button>
           </div>
         </div>

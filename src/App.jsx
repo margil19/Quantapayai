@@ -11,12 +11,14 @@ import Part3Sequencing from './components/Part3Sequencing'
 import Part3DataGaps from './components/Part3DataGaps'
 import Part4SyncFailure from './components/Part4SyncFailure'
 import Part4FieldMapping from './components/Part4FieldMapping'
+import BonusDashboard from './components/BonusDashboard'
 
 const PARTS = [
   { id: 'part1', label: 'Part 1: Designing the Integration', available: true },
   { id: 'part2', label: 'Part 2: AI in the Integration Layer', available: true },
   { id: 'part3', label: 'Part 3: Prioritization', available: true },
   { id: 'part4', label: 'Part 4: Error UX', available: true },
+  { id: 'bonus', label: 'Bonus: Health Dashboard', available: true, bonus: true },
 ]
 
 const PART1_SECTIONS = [
@@ -74,17 +76,20 @@ export default function App() {
                 <button
                   key={part.id}
                   onClick={() => part.available && handlePartSwitch(part.id)}
-                  className={`relative text-xs px-3 py-4 transition-colors font-medium ${
+                  className={`relative text-xs px-3 py-4 transition-colors font-medium flex items-center gap-1.5 ${
                     !part.available
                       ? 'text-gray-300 cursor-default'
                       : activePart === part.id
-                      ? 'text-primary'
+                      ? part.bonus ? 'text-accent' : 'text-primary'
                       : 'text-muted hover:text-dark'
                   }`}
                 >
+                  {part.bonus && (
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activePart === part.id ? 'bg-accent' : 'bg-accent/60'}`} />
+                  )}
                   {part.available ? part.label : part.label + ' — Coming Soon'}
                   {activePart === part.id && part.available && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+                    <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full ${part.bonus ? 'bg-accent' : 'bg-primary'}`} />
                   )}
                 </button>
               ))}
@@ -208,6 +213,24 @@ export default function App() {
 
       {/* Part 4 */}
       {/* Part 4 */}
+      {/* Bonus */}
+      {activePart === 'bonus' && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-medium text-accent bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                Bonus — beyond required scope
+              </span>
+            </div>
+            <h1 className="text-2xl font-bold text-dark mb-2">Integration Health Dashboard</h1>
+            <p className="text-sm text-muted max-w-2xl leading-relaxed">
+              Internal operations view — which tenants need action before payroll locks, what's failing, and how fast HR teams are responding to approval requests.
+            </p>
+          </div>
+          <BonusDashboard />
+        </div>
+      )}
+
       {activePart === 'part4' && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
           <div className="mb-8">

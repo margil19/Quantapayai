@@ -5,6 +5,7 @@ import FailureModes from './components/FailureModes'
 import Part2FieldMapping from './components/Part2FieldMapping'
 import Part2AnomalyDetection from './components/Part2AnomalyDetection'
 import Part2TrustWarning from './components/Part2TrustWarning'
+import Part2AIToolsAsPM from './components/Part2AIToolsAsPM'
 
 const PARTS = [
   { id: 'part1', label: 'Part 1: Designing the Integration', available: true },
@@ -23,6 +24,7 @@ const PART2_SECTIONS = [
   { id: 'fieldmapping', label: 'Field Mapping' },
   { id: 'anomaly', label: 'Anomaly Detection' },
   { id: 'notai', label: 'Where AI Should Not Be Used' },
+  { id: 'aitoolspm', label: 'AI Tools as PM' },
 ]
 
 function ComingSoon({ label }) {
@@ -152,6 +154,7 @@ export default function App() {
             {p2Section === 'fieldmapping' && <Part2FieldMapping />}
             {p2Section === 'anomaly' && <Part2AnomalyDetection />}
             {p2Section === 'notai' && <Part2TrustWarning />}
+            {p2Section === 'aitoolspm' && <Part2AIToolsAsPM />}
           </div>
         </div>
       )}

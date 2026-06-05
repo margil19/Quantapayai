@@ -112,13 +112,26 @@ export default function Part2FieldMapping() {
                 </div>
               )
             })}
-            <button
-              onClick={() => setManualStep(s => Math.min(s + 1, MANUAL_FIELDS.length))}
-              disabled={manualStep >= MANUAL_FIELDS.length}
-              className="w-full mt-2 text-xs text-gray-500 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 disabled:opacity-40 transition-colors"
-            >
-              {manualStep >= MANUAL_FIELDS.length ? 'All fields mapped (finally)' : `Map next field (${manualStep}/${MANUAL_FIELDS.length} done)`}
-            </button>
+            {manualStep < MANUAL_FIELDS.length ? (
+              <button
+                onClick={() => setManualStep(s => s + 1)}
+                className="w-full mt-2 text-xs text-gray-500 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+              >
+                Map next field ({manualStep}/{MANUAL_FIELDS.length} done)
+              </button>
+            ) : (
+              <div className="mt-2 space-y-2">
+                <div className="w-full text-xs text-center text-gray-400 border border-gray-100 rounded-lg py-2 bg-gray-50">
+                  All fields mapped — 2 hrs 47 min later
+                </div>
+                <button
+                  onClick={() => setManualStep(0)}
+                  className="w-full text-xs text-muted border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

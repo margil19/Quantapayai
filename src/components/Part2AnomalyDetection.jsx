@@ -40,19 +40,6 @@ const SYNC_CARDS = [
     flagDetail: 'Today is April 3 2025. Jordan\'s termination date is Jan 15 — over 2 months ago. This means final pay, benefit cutoffs, and severance may need to be recalculated retroactively. This could have been a delayed HR entry or an error.',
     whyMatters: 'Processing a termination dated months in the past triggers an off-cycle payroll correction in most countries. In Germany and California it also affects statutory deadlines for final pay. HR needs to confirm this date is intentional before it goes anywhere.',
   },
-  {
-    id: 'jurisdiction',
-    employee: 'Aiko Tanaka',
-    change: 'Worker type — Employee → Contractor (Germany)',
-    detail: 'Employment classification change, Munich office.',
-    status: 'flagged',
-    badge: 'Jurisdiction risk',
-    badgeColor: 'bg-purple-100 text-purple-700',
-    flagType: 'Jurisdiction Risk',
-    flagTitle: 'Employee → Contractor in Germany requires a 20-factor misclassification test',
-    flagDetail: 'German law (§611a BGB) makes misclassifying an employee as a contractor a criminal offence, not just a civil one. The company, not just the HR admin, bears liability. QuantapayAI flagged this automatically because Germany is a known high-risk jurisdiction for this change.',
-    whyMatters: 'If this goes through without legal review and Aiko is later deemed an employee by a German court, the company owes back wages, unpaid social contributions, and faces potential criminal charges. This is not a compliance inconvenience — it\'s a business-threatening risk.',
-  },
 ]
 
 function SyncCard({ card }) {
@@ -75,10 +62,10 @@ function SyncCard({ card }) {
         card.status === 'normal'
           ? 'border-gray-200 bg-white'
           : expanded
-          ? 'border-red-200 bg-red-50/20'
+          ? 'border-red-200 bg-red-50/20 cursor-pointer'
           : 'border-amber-200 bg-amber-50/10 cursor-pointer hover:border-amber-300'
       }`}
-      onClick={() => card.status !== 'normal' && !expanded && setExpanded(true)}
+      onClick={() => card.status !== 'normal' && setExpanded(v => !v)}
     >
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
@@ -107,7 +94,7 @@ function SyncCard({ card }) {
       </div>
 
       {expanded && (
-        <div className="border-t border-red-100 px-4 pb-4 pt-3 space-y-3">
+        <div className="border-t border-red-100 px-4 pb-4 pt-3 space-y-3" onClick={e => e.stopPropagation()}>
           <div>
             <p className="text-xs font-semibold text-dark mb-1">What was detected — {card.flagType}</p>
             <p className="text-xs text-gray-600 leading-relaxed">{card.flagDetail}</p>

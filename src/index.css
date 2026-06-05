@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-dark font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .animate-packet {
+    animation: movePacket 2.5s ease-in-out forwards;
+  }
+}
+
+@keyframes movePacket {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}

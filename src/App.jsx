@@ -9,12 +9,14 @@ import Part2AIToolsAsPM from './components/Part2AIToolsAsPM'
 import Part3BuildBuy from './components/Part3BuildBuy'
 import Part3Sequencing from './components/Part3Sequencing'
 import Part3DataGaps from './components/Part3DataGaps'
+import Part4SyncFailure from './components/Part4SyncFailure'
+import Part4FieldMapping from './components/Part4FieldMapping'
 
 const PARTS = [
   { id: 'part1', label: 'Part 1: Designing the Integration', available: true },
   { id: 'part2', label: 'Part 2: AI in the Integration Layer', available: true },
   { id: 'part3', label: 'Part 3: Prioritization', available: true },
-  { id: 'part4', label: 'Part 4', available: false },
+  { id: 'part4', label: 'Part 4: Error UX', available: true },
 ]
 
 const PART1_SECTIONS = [
@@ -47,6 +49,7 @@ export default function App() {
   const [p1Section, setP1Section] = useState('dataflow')
   const [p2Section, setP2Section] = useState('fieldmapping')
   const [p3Section, setP3Section] = useState('buildbuy')
+  const [p4Section, setP4Section] = useState('syncfailure')
 
   const handlePartSwitch = (partId) => {
     setActivePart(partId)
@@ -204,9 +207,41 @@ export default function App() {
       )}
 
       {/* Part 4 */}
+      {/* Part 4 */}
       {activePart === 'part4' && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <ComingSoon label={PARTS.find(p => p.id === activePart)?.label} />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="mb-8">
+            <span className="text-xs font-medium text-primary bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">
+              Case Study · Part 4 of 4
+            </span>
+            <h1 className="text-2xl font-bold text-dark mt-3 mb-2">Error UX & Onboarding Wireframes</h1>
+            <p className="text-sm text-muted max-w-2xl leading-relaxed">
+              Two interactive product screens — how QuantapayAI surfaces a sync failure to an HR admin, and how field mapping is configured during onboarding. Both are clickable, not static.
+            </p>
+          </div>
+          <div className="flex items-center gap-1 border-b border-gray-100 mb-8">
+            {[
+              { id: 'syncfailure', label: 'Sync Failure State' },
+              { id: 'fieldmapping', label: 'Field Mapping Configuration' },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setP4Section(s.id)}
+                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
+                  p4Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
+                }`}
+              >
+                {s.label}
+                {p4Section === s.id && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+                )}
+              </button>
+            ))}
+          </div>
+          <div>
+            {p4Section === 'syncfailure' && <Part4SyncFailure />}
+            {p4Section === 'fieldmapping' && <Part4FieldMapping />}
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-const DISCLAIMER = 'Trust tier assigned based on reversibility, payroll consequence, and regulatory exposure. Human oversight is required for all irreversible or compliance-sensitive actions.'
 
 const TIERS = [
   {
@@ -117,26 +116,6 @@ const TIERS = [
   },
 ]
 
-function InfoTooltip() {
-  const [show, setShow] = useState(false)
-  return (
-    <span className="relative inline-block">
-      <button
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        className="text-gray-400 hover:text-gray-600 text-xs ml-1 transition-colors"
-        aria-label="Trust tier info"
-      >
-        ⓘ
-      </button>
-      {show && (
-        <span className="absolute z-10 left-full ml-2 top-0 w-72 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 leading-relaxed shadow-xl">
-          {DISCLAIMER}
-        </span>
-      )}
-    </span>
-  )
-}
 
 function ActionCard({ action, tier }) {
   const [open, setOpen] = useState(false)
@@ -146,12 +125,9 @@ function ActionCard({ action, tier }) {
       onClick={() => setOpen(!open)}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className={`text-xs font-medium ${tier.badgeBg} px-2 py-0.5 rounded-full`}>
-            {action.name}
-          </span>
-          <InfoTooltip />
-        </div>
+        <span className={`text-xs font-medium ${tier.badgeBg} px-2 py-0.5 rounded-full`}>
+          {action.name}
+        </span>
         <span className={`text-xs text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>▾</span>
       </div>
       {open && (
@@ -178,24 +154,6 @@ function ActionCard({ action, tier }) {
   )
 }
 
-function DesignChip() {
-  const [open, setOpen] = useState(false)
-  return (
-    <span>
-      <button
-        onClick={() => setOpen(!open)}
-        className="text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5"
-      >
-        <span>ⓘ</span> Why deterministic tiers, not ML-based?
-      </button>
-      {open && (
-        <span className="block mt-2 text-xs text-muted bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-lg leading-relaxed">
-          ML-based routing introduces model uncertainty into payroll decisions — where a wrong classification means missing a final paycheck or misclassifying a worker across jurisdictions. The trust tier logic is deterministic and auditable: the same action always produces the same tier. HR admins can predict and explain every routing decision, which is a compliance requirement in many enterprise customers.
-        </span>
-      )}
-    </span>
-  )
-}
 
 export default function TrustGradient() {
   return (
@@ -205,7 +163,12 @@ export default function TrustGradient() {
         <p className="text-sm text-muted mb-3">
           Every write action is classified by reversibility, payroll consequence, and regulatory exposure — then routed to one of three tiers. Click any action card to see the full reasoning.
         </p>
-        <DesignChip />
+        <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
+          <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
+          <p className="text-xs text-muted leading-relaxed">
+            Trust tier is assigned based on reversibility, payroll consequence, and regulatory exposure. Human oversight is required for all irreversible or compliance-sensitive actions.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

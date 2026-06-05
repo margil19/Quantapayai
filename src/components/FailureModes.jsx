@@ -14,72 +14,53 @@ const FAILURE_MODES = [
     category: 'Data Mapping',
     title: 'Salary Field Type Mismatch',
     description: 'Workday returns salary as a formatted string. QuantapayAI expects a clean decimal.',
-    what: 'Workday returns Annual_Base_Salary as "$85,000.00 USD" — a formatted string with currency symbol. QuantapayAI\'s normalization layer expects a clean decimal (85000.00) and separate ISO 4217 currency code. A regex parsing failure extracts "8500000" — missing the decimal — and routes a 100x salary to the write queue.',
-    detected: 'Schema validation layer rejects the parsed value if it falls outside a sanity range (>500% of current value or <$0.01/hr equivalent). Alert fires before any write attempt. Employee: Marcus Lee, WD-31042.',
-    notified: 'Integration health dashboard: amber alert. QuantapayAI CS rep assigned: email + in-app within 5 min. HR admin: in-app notification with affected record and raw Workday value for manual review.',
-    matters: 'Silent rejection means the salary change is lost — the employee gets paid at the old rate until someone manually catches it, which may not happen before the next payroll lock. A bad write means a 100x overpay.',
+    what: 'Imagine Marcus Lee\'s salary in Workday is stored as "$85,000.00 USD" — a piece of text, not just a number. QuantapayAI needs a clean number to work with. During translation, a small parsing mistake drops the decimal point and reads the value as $8,500,000. Without a safety check, that 100x salary would land in the approval queue.',
+    detected: 'Before anything is written, QuantapayAI runs a sanity check — if a salary looks more than 5x the current value, it stops and raises an alert immediately. Nothing is changed until a human reviews it.',
+    notified: 'The HR admin sees an in-app alert with Marcus\'s name and the raw value from Workday so they can spot the issue. The assigned QuantapayAI support rep is also notified within 5 minutes.',
+    matters: 'Without this check, two bad outcomes are possible: the salary change is quietly skipped (Marcus keeps getting paid the old amount), or it goes through as written (a 100x overpay). Either way, payroll is wrong before anyone notices.',
   },
   {
     id: 'FM-2',
     category: 'Timing',
     title: 'Termination Before Payroll Lock',
     description: 'Termination detected on Day 1, effective Day 15 — payroll locks Day 10.',
-    what: 'HR marks termination in Workday for Jordan Park (WD-22918) on Jun 1 with effective date Jun 15. QuantapayAI receives the event on Jun 1. Payroll for the current cycle locks Jun 10. The queued termination approval is not actioned — the final payroll run either misses or processes incorrectly.',
-    detected: 'Termination events with effective dates within the current payroll cycle window are auto-flagged as time-sensitive. Countdown SLA shown to HR admin: "Action required by Jun 10 to avoid compliance issue."',
-    notified: 'HR admin: push notification + email with explicit payroll lock deadline. If unapproved 48hrs before lock: escalation to HR Manager role. After lock passes without action: CS team alerted to initiate off-cycle run protocol.',
-    matters: 'In UK, Germany, and California, delayed final pay carries statutory fines. This is not an edge case — it is a compliance risk QuantapayAI must surface proactively, not reactively.',
+    what: 'Jordan Park resigns on June 1st, with June 15th as their last day. HR logs it in Workday straight away and QuantapayAI picks it up. But payroll for the current cycle closes on June 10th — meaning the termination approval needs to happen before then, or the final paycheck either gets missed or goes out wrong.',
+    detected: 'QuantapayAI spots that the last day falls within the current pay cycle and immediately shows a countdown to the HR admin: "Approve by June 10th to avoid a compliance issue." It\'s surfaced as urgent, not buried in a queue.',
+    notified: 'HR admin gets a push notification and email with the exact deadline. If they haven\'t acted 48 hours before the cutoff, it automatically escalates to the HR Manager. If payroll locks without action, the support team is alerted to run a manual off-cycle payment.',
+    matters: 'In countries like the UK, Germany, and in California, paying someone late after they leave is a legal violation — not just an inconvenience. QuantapayAI has to surface this proactively, not wait for someone to notice.',
   },
   {
     id: 'FM-3',
     category: 'API Regression',
     title: 'Workday API Version Upgrade Breaks Schema',
     description: 'Workday v42 renames a field. Customer tenant auto-upgrades. Normalization layer expects old structure.',
-    what: 'Workday releases API v42 and restructures Worker_Type into a sub-object. Customer\'s Acme Corp tenant (WD tenant: T-8821) auto-upgrades. QuantapayAI\'s normalization layer still expects the v41 flat field. Worker_Type returns null. All subsequent worker type reads silently drop the field.',
-    detected: 'Two layers: (1) Null/empty on a required field triggers schema validation error immediately. (2) Synthetic canary record — a test worker in each tenant is polled every 30 min and all fields validated. Any mismatch fires before real employees are affected.',
-    notified: 'QuantapayAI Integration Platform team: P1 alert — Slack + PagerDuty immediately. Affected customer CS reps: email within 15 min. HR admins: banner — "Workday sync paused — our team is investigating. No data has been lost."',
-    matters: 'Sync is paused (not silently failing) until normalization layer is patched. All changes during the pause are backfilled using the stored last-successful-sync cursor — no manual re-entry required.',
+    what: 'Think of it like Workday rearranging the furniture without telling anyone. Workday releases an update that moves a key piece of data — the worker\'s employment type — to a different location in their system. Acme Corp\'s Workday account updates automatically overnight. QuantapayAI is still looking in the old place, finds nothing, and that field goes blank for every employee pulled after the update.',
+    detected: 'QuantapayAI keeps a "canary" — a dummy test employee in every customer\'s account that it checks every 30 minutes. If that test record starts coming back wrong, the alarm fires before any real employee data is affected.',
+    notified: 'The QuantapayAI engineering team gets an immediate alert and starts a fix. Affected customers\' support reps are emailed within 15 minutes. HR admins see a banner: "Workday sync is paused while we investigate — no data has been lost."',
+    matters: 'The sync pauses cleanly instead of quietly writing bad data. Once the fix is live, QuantapayAI replays all the missed changes automatically — HR doesn\'t have to re-enter anything manually.',
   },
   {
     id: 'FM-4',
     category: 'Config Error',
     title: 'Incorrect Field Mapping During Onboarding',
     description: 'HR admin maps a Workday sub-type field to employment_classification. All contingent workers import with wrong classification.',
-    what: 'During onboarding, an HR admin at GlobalHR Inc. maps Workday\'s "Contingent_Worker_Type" to QuantapayAI\'s employment_classification field. The Workday field is a sub-type of contingent workers, not the top-level worker classification. All 47 contingent workers import with employment_classification: "CONTINGENT_SUBTYPE_A" — an unknown enum value.',
-    detected: 'Post-mapping dry-run: QuantapayAI runs a validation sync against 10 sample records from the customer\'s Workday tenant before go-live. Sample records are shown to the HR admin for review. Enum value mismatches (unknown worker type strings) are flagged inline with suggested corrections.',
-    notified: 'HR admin during onboarding dry-run: inline warning with field-level detail and correction suggestion. If caught post-go-live: CS rep + HR admin with bulk re-classification workflow and audit trail.',
-    matters: 'Customer configuration errors cannot be caught by schema validation alone — the fields technically map, the values are semantically wrong. Only showing the customer their own real data in a pre-production review catches this class of error.',
+    what: 'When GlobalHR Inc. first set up their integration, their HR admin connected the wrong Workday field to the "worker type" field in QuantapayAI. They picked a sub-category field instead of the main one — like tagging everyone with "Contractor - Sub-type A" instead of just "Contractor." All 47 contract workers imported with an unrecognised label that QuantapayAI didn\'t know what to do with.',
+    detected: 'Before going live, QuantapayAI runs a test sync using 10 real employees from the customer\'s Workday account and shows the results to the HR admin. In this case, the worker type column looked obviously wrong — the admin could see it immediately and fix the mapping before anything went live.',
+    notified: 'The HR admin sees a clear warning during the test review with a suggested fix. If it\'s only caught after going live, the support team steps in with a tool to bulk-correct all the affected records.',
+    matters: 'The technical check can\'t catch this — the connection looked valid on paper, just pointing at the wrong thing. Only showing HR their own real data in a test run surfaces this kind of mistake before it becomes a payroll problem.',
   },
   {
     id: 'FM-5',
     category: 'Idempotency',
     title: 'Duplicate New Hire on Rapid Retry',
     description: 'Sync engine times out writing a new hire. Retry fires. QuantapayAI creates a second employee record.',
-    what: 'Sync engine detects new hire Sarah Chen (WD-48291). Write to QuantapayAI times out after 30 seconds due to a network issue. Retry fires automatically. Without idempotency enforcement, QuantapayAI creates employee #48291-A and #48291-B — duplicate payroll enrollment follows.',
-    detected: 'Every write includes an idempotency key derived from Worker_ID + event_type + effective_date (e.g. "WD-48291:new_hire:2025-07-01"). QuantapayAI\'s API rejects duplicate keys with a 409 Conflict. Sync engine treats 409 as success and logs accordingly — no duplicate created.',
-    notified: 'No notification to HR admin for clean 409 handling (expected behavior, no action needed). If a duplicate slips past the idempotency check: automated deduplication job runs nightly and flags records with identical Worker_ID for CS review.',
-    matters: 'Name-based deduplication fails on common names and legal name changes. Worker_ID is the only stable, unique identifier across Workday tenants. Idempotency must be ID-based, not fuzzy-match.',
+    what: 'Sarah Chen\'s new hire record is picked up and sent to QuantapayAI. Halfway through, the connection drops. QuantapayAI never confirmed it received the record, so the sync engine tries again — and this time it goes through. Without a safeguard, Sarah now exists twice in QuantapayAI, and payroll would enroll her twice.',
+    detected: 'Every record sent comes with a unique stamp based on Sarah\'s ID, the type of change, and the date. When the retry arrives, QuantapayAI sees it already processed that exact stamp and quietly ignores the second one — no duplicate is created.',
+    notified: 'Nothing happens — this is the system working exactly as intended. If a duplicate somehow slipped through, an overnight check scans for employees sharing the same Workday ID and flags them for the support team to review.',
+    matters: 'You can\'t catch duplicates by name — two different Sarahs could join the same day, and someone named Sarah Chen could also change their name. The only reliable way to know it\'s the same person is their unique Workday ID.',
   },
 ]
 
-function DesignChip() {
-  const [open, setOpen] = useState(false)
-  return (
-    <button
-      onClick={() => setOpen(!open)}
-      className="text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5"
-    >
-      <span>ⓘ</span> Why design for failure first?
-      {open && (
-        <span
-          onClick={(e) => e.stopPropagation()}
-          className="absolute z-10 mt-6 ml-0 w-80 bg-gray-50 border border-gray-200 text-left rounded-lg px-3 py-2 text-xs text-muted leading-relaxed shadow-lg font-normal"
-        >
-          Happy-path integrations are table stakes. Enterprise payroll integrations fail in specific, predictable ways — field type drift, timing mismatches, config errors at onboarding, API regressions. Designing failure modes first forces the integration architecture to be resilient by default: every stage has a defined failure state, a detection mechanism, and a notification path. Silent data loss is never acceptable in payroll.
-        </span>
-      )}
-    </button>
-  )
-}
 
 function FMCard({ fm }) {
   const [open, setOpen] = useState(false)
@@ -133,13 +114,12 @@ export default function FailureModes() {
     <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Failure Modes</h2>
-        <p className="text-sm text-muted mb-3">
+        <p className="text-sm text-muted">
           Five failure scenarios across all four failure categories. The integration is designed to fail loudly — never silently. Click any card to expand the full incident detail.
         </p>
-        <DesignChip />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {FAILURE_MODES.map((fm) => (
           <FMCard key={fm.id} fm={fm} />
         ))}

@@ -5,31 +5,31 @@ const STAGES = [
     id: 'workday',
     label: 'Workday HCM',
     icon: '⬡',
-    tooltip: 'Source of truth — RAAS polling detects changed worker records every 15 min using an As-Of-Date filter.',
+    tooltip: 'Where all employee data lives. QuantapayAI checks Workday regularly to see if anything has changed — like a new hire, a salary update, or someone leaving.',
   },
   {
     id: 'sync',
     label: 'Sync Engine',
     icon: '⟳',
-    tooltip: 'Manages poll cursor per customer tenant. On timeout, retries from the same cursor — no data loss.',
+    tooltip: 'The part that keeps track of what was last checked. If something goes wrong mid-sync, it picks up exactly where it left off — nothing gets missed or double-counted.',
   },
   {
     id: 'normalize',
     label: 'Normalization Layer',
     icon: '≡',
-    tooltip: 'Maps Workday XML/JSON fields to QuantapayAI canonical schema. Handles API versions v35–v42+.',
+    tooltip: 'Workday and QuantapayAI speak slightly different "languages." This layer translates the data into a standard format both systems understand — like converting a date from "July 1st 2025" to a consistent format every system can read.',
   },
   {
     id: 'trust',
     label: 'Trust Router',
     icon: '⬡',
-    tooltip: 'Classifies each change by reversibility, payroll consequence, and regulatory exposure — then routes to Direct Write, Queue, or Suggest.',
+    tooltip: 'Decides what happens next with each change. Safe, low-risk changes (like updating a job title) go through automatically. High-stakes changes (like a salary update or termination) get held for HR to review before anything is touched.',
   },
   {
     id: 'quantapay',
     label: 'QuantapayAI',
     icon: '◈',
-    tooltip: 'Writes are idempotent — keyed on Worker_ID + event_type + effective_date. 409 Conflict = safe retry.',
+    tooltip: 'The final destination. Approved changes land here and update payroll. If the same change is sent twice by mistake, the system recognises it and ignores the duplicate — no double entries.',
   },
 ]
 
@@ -40,11 +40,11 @@ const TRIGGERS = {
     bgLight: 'bg-emerald-50 border-emerald-200',
     employee: 'Sarah Chen',
     details: [
-      { stage: 'workday', value: 'Worker_ID: WD-48291 · Legal Name: Sarah Chen · Dept: Engineering · Hire Date: Jul 1 2025' },
-      { stage: 'sync', value: 'Poll cursor advanced. Last-sync: 2025-06-05T09:00Z → 2025-06-05T09:15Z. Change detected.' },
-      { stage: 'normalize', value: 'Mapped to canonical schema: employee_external_id, legal_first_name, employment_start_date, work_country: US' },
-      { stage: 'trust', value: 'Identity fields → Direct Write. Start date → Queue for Approval. Work location (US) → Queue for Approval.' },
-      { stage: 'quantapay', value: 'Identity fields written. Start date queued. Idempotency key: WD-48291:new_hire:2025-07-01' },
+      { stage: 'workday', value: 'Sarah Chen joined Engineering, starting July 1 2025. Workday has her details — name, department, start date, and location.' },
+      { stage: 'sync', value: 'QuantapayAI spotted the new record on its regular check. Nothing was missed — it knows exactly where it left off.' },
+      { stage: 'normalize', value: "Sarah's details are translated into QuantapayAI's format — name, start date, and work country all standardised and ready to use." },
+      { stage: 'trust', value: "Basic info (name, ID) goes through automatically — it's safe and easy to fix if wrong. Her start date and location need HR sign-off since they affect her first paycheck." },
+      { stage: 'quantapay', value: "Sarah's profile is created. Her start date is sitting in the approval queue waiting for HR. If this somehow runs twice, the duplicate is automatically blocked." },
     ],
   },
   'Salary Change': {
@@ -53,11 +53,11 @@ const TRIGGERS = {
     bgLight: 'bg-amber-50 border-amber-200',
     employee: 'Marcus Lee',
     details: [
-      { stage: 'workday', value: 'Worker_ID: WD-31042 · Annual_Base_Salary: "$112,000.00 USD" · Effective: Jul 1 2025' },
-      { stage: 'sync', value: 'Compensation change detected. Effective date is within current payroll cycle — flagged time-sensitive.' },
-      { stage: 'normalize', value: 'Parsed to: annual_salary_amount: 112000.00 · currency: USD · effective_date: 2025-07-01' },
-      { stage: 'trust', value: 'Salary change → Queue for Approval. Payroll consequence: CRITICAL. Reversibility: Low.' },
-      { stage: 'quantapay', value: 'Staged for HR approval. Push notification sent. SLA: approve before payroll lock Jun 25.' },
+      { stage: 'workday', value: "Marcus Lee's salary was updated to $112,000, effective July 1 2025. The change is sitting in Workday waiting to be picked up." },
+      { stage: 'sync', value: "QuantapayAI noticed the change on its next check. It flagged this as time-sensitive because the effective date falls within the current pay cycle." },
+      { stage: 'normalize', value: "The salary is converted from the raw Workday format (\"$112,000.00 USD\") into clean numbers QuantapayAI can work with: 112000.00 in USD." },
+      { stage: 'trust', value: "Salary changes always require HR approval — getting this wrong means someone is over or underpaid, which can have legal consequences in many countries." },
+      { stage: 'quantapay', value: "The change is held in a queue. HR has been notified and needs to approve before the payroll deadline on Jun 25. Nothing is updated until they do." },
     ],
   },
   'Termination': {
@@ -66,11 +66,11 @@ const TRIGGERS = {
     bgLight: 'bg-red-50 border-red-200',
     employee: 'Jordan Park',
     details: [
-      { stage: 'workday', value: 'Worker_ID: WD-22918 · Termination_Date: Jun 15 2025 · Reason: VOLUNTARY · Last day: Jun 14 2025' },
-      { stage: 'sync', value: 'Termination detected. Effective date within current payroll cycle. Auto-flagged: time-sensitive. Countdown started.' },
-      { stage: 'normalize', value: 'Mapped: termination_date: 2025-06-15 · termination_reason: VOLUNTARY · triggers final pay workflow' },
-      { stage: 'trust', value: 'Termination → Queue for Approval (always). Irreversible. Final pay, severance, statutory obligations.' },
-      { stage: 'quantapay', value: 'Staged. HR notified with payroll lock deadline. Escalation to HR Manager if no action in 48hrs.' },
+      { stage: 'workday', value: "Jordan Park's last day is June 14 2025 — a voluntary resignation. Workday has the termination date and reason recorded." },
+      { stage: 'sync', value: "QuantapayAI picked up the termination. Because it falls within the current pay period, it was immediately flagged as urgent — a clock is now ticking." },
+      { stage: 'normalize', value: "The leaving date and reason are translated into QuantapayAI's format. This automatically kicks off the final pay calculation workflow." },
+      { stage: 'trust', value: "Terminations always require HR approval — no exceptions. Final pay, any severance, and benefits cutoff are all on the line. This can never happen automatically." },
+      { stage: 'quantapay', value: "The termination is queued for HR approval with a clear deadline. If no action is taken within 48 hours, it escalates to the HR Manager automatically." },
     ],
   },
 }
@@ -78,16 +78,18 @@ const TRIGGERS = {
 function DesignChip() {
   const [open, setOpen] = useState(false)
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex flex-col gap-1">
       <button
         onClick={() => setOpen(!open)}
-        className="text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5"
+        className="text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5 self-start"
       >
-        <span>ⓘ</span> Why polling, not webhooks?
+        <span>ⓘ</span> Why does QuantapayAI check Workday on a schedule instead of getting instant alerts?
       </button>
       {open && (
-        <span className="block mt-2 text-xs text-muted bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-md leading-relaxed">
-          Workday does not support native outbound webhooks. RAAS polling is the Workday-native approach — no customer middleware, works across all tenants, and the 15-min polling window is acceptable for payroll workflows where same-second latency is never required. EIB file drops were rejected: they add customer config burden and file-parsing fragility.
+        <span className="block text-xs text-muted bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-lg leading-relaxed">
+          Workday doesn't support instant push notifications (webhooks) — it doesn't have a built-in way to say "hey, something just changed." So QuantapayAI checks in on a regular schedule instead, which is the standard approach for Workday and works reliably across all customers with no extra setup.
+          <br /><br />
+          For other HR systems that <em>do</em> support instant notifications (like BambooHR or Rippling), QuantapayAI can switch to a webhook-based flow — meaning changes arrive in real time rather than on a polling schedule.
         </span>
       )}
     </span>
@@ -126,8 +128,11 @@ export default function DataFlow() {
     <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Data Flow</h2>
-        <p className="text-sm text-muted mb-2">
-          QuantapayAI polls Workday RAAS every 15 minutes. Select a trigger event to animate the data packet through each integration stage.
+        <p className="text-sm text-muted mb-1">
+          QuantapayAI checks Workday for changes on a regular schedule. Select a trigger event below to see how a change travels through the integration, step by step.
+        </p>
+        <p className="text-xs text-muted mb-2">
+          ⓘ The check frequency (typically every 15–30 minutes) is configured per customer tenant and can be adjusted based on data volume and cost requirements.
         </p>
         <DesignChip />
       </div>
@@ -159,19 +164,18 @@ export default function DataFlow() {
       </div>
 
       {/* Pipeline */}
-      <div className="relative">
-        <div className="flex items-stretch gap-0 overflow-x-auto pb-2">
+      <div className="relative overflow-x-auto pb-2">
+        <div className="flex items-center gap-0 min-w-[700px]">
           {STAGES.map((stage, i) => {
             const isActive = activeStage === i
             const isPast = activeStage > i
-            const detail = active && TRIGGERS[active]?.details[i]
 
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
                 <div
                   className={`flex-1 min-w-0 rounded-xl border-2 transition-all duration-500 cursor-pointer select-none ${
                     isActive
-                      ? 'border-primary bg-purple-50 shadow-md shadow-primary/10 scale-[1.03]'
+                      ? 'border-primary bg-purple-50 shadow-md shadow-primary/10'
                       : isPast
                       ? 'border-purple-200 bg-purple-50/40'
                       : 'border-gray-200 bg-white'
@@ -191,15 +195,8 @@ export default function DataFlow() {
                         {stage.tooltip}
                       </div>
                     )}
-                    {isActive && detail && (
-                      <div className={`text-xs mt-2 leading-relaxed px-2 py-1.5 rounded-lg border ${currentData?.bgLight} ${currentData?.textColor} font-medium`}>
-                        {detail.value}
-                      </div>
-                    )}
-                    {isPast && !isActive && detail && (
-                      <div className="text-xs mt-2 text-purple-400 leading-relaxed truncate">
-                        ✓ processed
-                      </div>
+                    {isPast && (
+                      <div className="text-xs mt-1 text-purple-400">✓ processed</div>
                     )}
                   </div>
                 </div>
@@ -217,6 +214,19 @@ export default function DataFlow() {
           })}
         </div>
       </div>
+
+      {/* Active stage detail — shown below the pipeline, never inside a box */}
+      {active && activeStage >= 0 && activeStage < STAGES.length && (
+        <div className={`rounded-xl border px-4 py-3 transition-all duration-300 ${currentData?.bgLight}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`text-xs font-semibold ${currentData?.textColor}`}>{STAGES[activeStage].label}</span>
+            {animating && <span className="text-xs text-gray-400 animate-pulse">processing…</span>}
+          </div>
+          <p className={`text-sm leading-relaxed ${currentData?.textColor}`}>
+            {TRIGGERS[active].details[activeStage].value}
+          </p>
+        </div>
+      )}
 
       {/* Active event summary */}
       {active && activeStage === STAGES.length - 1 && (

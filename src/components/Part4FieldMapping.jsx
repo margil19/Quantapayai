@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const ROWS = [
+const INITIAL_ROWS = [
   {
     id: 'worker_id',
     workday: 'Worker_ID',
@@ -41,9 +41,10 @@ const ROWS = [
     locked: false,
     blockingGoLive: false,
     warningTitle: 'Format mismatch',
-    warningDetail: 'Workday sends this field as formatted text (e.g. "$92,000.00 USD"). QuantapayAI expects a plain number (92000.00). We\'ll convert it automatically — confirm in preview that the conversion looks right.',
+    warningDetail: 'Workday sends this field as formatted text (e.g. "$92,000.00 USD"). QuantapayAI expects a plain number. We\'ll convert it automatically — confirm in preview that the conversion looks right.',
     workdaySent: '"$92,000.00 USD"',
     quantapayWillStore: '92000.00  (currency: USD)',
+    options: ["Employee's annual salary", 'Hourly rate', 'Bonus amount'],
   },
   {
     id: 'worker_type',
@@ -54,7 +55,7 @@ const ROWS = [
     status: 'amber',
     locked: false,
     blockingGoLive: false,
-    options: ['employment_classification', 'worker_type', 'employment_subtype', '— skip this field —'],
+    options: ['Employment type', 'Worker classification', 'Contract type'],
   },
   {
     id: 'reg_class',
@@ -65,7 +66,7 @@ const ROWS = [
     status: 'red',
     locked: false,
     blockingGoLive: false,
-    options: ['regulatory_classification', 'compliance_code', 'custom_attribute_1', '— skip this field —'],
+    options: ['Regulatory role', 'Compliance category', 'Job classification'],
   },
   {
     id: 'schedule',
@@ -76,7 +77,8 @@ const ROWS = [
     status: 'blocked',
     locked: false,
     blockingGoLive: true,
-    blockedReason: 'Required for payroll — no matching Workday field found. Contact your Workday admin to add this field before going live.',
+    blockedReason: 'Required for payroll — no matching Workday field found. Select a mapping below to unblock.',
+    options: ['Work schedule', 'Shift type', 'Hours per week'],
   },
   {
     id: 'pay_group',
@@ -87,7 +89,7 @@ const ROWS = [
     status: 'red',
     locked: false,
     blockingGoLive: false,
-    options: ['pay_group_id', 'payroll_schedule', 'pay_frequency', '— skip this field —'],
+    options: ['Pay group', 'Payroll schedule', 'Payment frequency'],
   },
   {
     id: 'national_id',
@@ -111,22 +113,37 @@ const ROWS = [
   },
 ]
 
+const PREVIEW_EMPLOYEES = [
+  { name: 'Sarah Chen',    id: 'EMP-4821', startDate: '2022-03-15', salary: '$92,000.00 USD', workerType: 'CONTINGENT_SUBTYPE_A', schedule: 'FULL_TIME_40', payGroup: 'PG-US-SEMI', salaryMismatch: true },
+  { name: 'Marcus Lee',    id: 'EMP-3104', startDate: '2021-07-01', salary: '$112,000.00 USD', workerType: 'Employee',             schedule: 'FULL_TIME_40', payGroup: 'PG-US-SEMI', salaryMismatch: true },
+  { name: 'Priya Nair',    id: 'EMP-5522', startDate: '2023-01-10', salary: '$78,500.00 USD',  workerType: 'Employee',             schedule: 'FULL_TIME_40', payGroup: 'PG-US-BI',   salaryMismatch: true },
+  { name: 'Jordan Park',   id: 'EMP-2291', startDate: '2020-09-14', salary: '$95,000.00 USD',  workerType: 'Contractor',           schedule: 'PART_TIME_20', payGroup: 'PG-US-SEMI', salaryMismatch: true },
+  { name: 'Aiko Tanaka',   id: 'EMP-6047', startDate: '2024-02-28', salary: '$88,000.00 USD',  workerType: 'Employee',             schedule: 'FULL_TIME_40', payGroup: 'PG-EU-MO',   salaryMismatch: true },
+]
+
 function statusStyle(status) {
-  if (status === 'auto') return { row: 'border-l-4 border-l-emerald-400 bg-white', badge: 'bg-emerald-100 text-emerald-700', label: 'Auto-confirmed' }
-  if (status === 'warning') return { row: 'border-l-4 border-l-amber-400 bg-amber-50/30', badge: 'bg-amber-100 text-amber-700', label: 'Needs review' }
-  if (status === 'amber') return { row: 'border-l-4 border-l-amber-400 bg-white', badge: 'bg-amber-100 text-amber-700', label: 'Needs review' }
-  if (status === 'red') return { row: 'border-l-4 border-l-red-400 bg-white', badge: 'bg-red-100 text-red-700', label: 'Unmapped' }
-  if (status === 'blocked') return { row: 'border-l-4 border-l-red-600 bg-red-50/30', badge: 'bg-red-600 text-white', label: 'Blocking' }
-  if (status === 'locked') return { row: 'bg-gray-50 border-l-4 border-l-gray-200', badge: 'bg-gray-100 text-gray-500', label: 'PII — locked' }
+  if (status === 'confirmed') return { row: 'border-l-4 border-l-emerald-500 bg-emerald-50/30', badge: 'bg-emerald-100 text-emerald-700', label: 'Confirmed' }
+  if (status === 'auto')      return { row: 'border-l-4 border-l-emerald-400 bg-white',         badge: 'bg-emerald-100 text-emerald-700', label: 'Auto-confirmed' }
+  if (status === 'warning')   return { row: 'border-l-4 border-l-amber-400 bg-amber-50/30',     badge: 'bg-amber-100 text-amber-700',   label: 'Needs review' }
+  if (status === 'amber')     return { row: 'border-l-4 border-l-amber-400 bg-white',           badge: 'bg-amber-100 text-amber-700',   label: 'Needs review' }
+  if (status === 'red')       return { row: 'border-l-4 border-l-red-400 bg-white',             badge: 'bg-red-100 text-red-700',       label: 'Unmapped' }
+  if (status === 'blocked')   return { row: 'border-l-4 border-l-red-600 bg-red-50/30',         badge: 'bg-red-600 text-white',         label: 'Blocking' }
+  if (status === 'locked')    return { row: 'bg-gray-50 border-l-4 border-l-gray-200',          badge: 'bg-gray-100 text-gray-500',     label: 'PII — locked' }
   return { row: 'bg-white', badge: 'bg-gray-100 text-gray-500', label: '' }
 }
 
-function FieldRow({ row }) {
+function FieldRow({ row, onConfirm }) {
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState(row.mapsTo || '')
-  const [confirmed, setConfirmed] = useState(false)
+  const [selected, setSelected] = useState('')
   const s = statusStyle(row.status)
-  const isClickable = ['warning', 'amber', 'red'].includes(row.status)
+  const isClickable = ['warning', 'amber', 'red', 'blocked'].includes(row.status)
+
+  const handleConfirm = () => {
+    if (!selected) return
+    onConfirm(row.id, selected)
+    setOpen(false)
+    setSelected('')
+  }
 
   return (
     <>
@@ -136,22 +153,24 @@ function FieldRow({ row }) {
       >
         <td className="px-4 py-3">
           <span className="text-xs font-mono text-dark">{row.workday}</span>
-          {row.blockingGoLive && <span className="ml-2 text-xs text-red-600 font-semibold">⛔</span>}
+          {row.blockingGoLive && row.status !== 'confirmed' && <span className="ml-2 text-xs text-red-600 font-semibold">⛔</span>}
           {row.locked && <span className="ml-2 text-gray-400">🔒</span>}
         </td>
         <td className="px-4 py-3">
           {row.locked ? (
             <span className="text-xs font-mono text-gray-400 italic">{row.mapsTo}</span>
-          ) : confirmed && selected ? (
-            <span className="text-xs font-mono text-primary font-medium">{selected}</span>
+          ) : row.status === 'confirmed' ? (
+            <span className="text-xs font-mono text-emerald-700 font-medium">{row.mapsTo}</span>
           ) : row.status === 'auto' ? (
             <span className="text-xs font-mono text-gray-600">{row.mapsTo}</span>
           ) : (
-            <span className="text-xs text-gray-400 italic">{selected || '— select mapping'}</span>
+            <span className="text-xs text-gray-400 italic">{row.mapsTo || '— select mapping'}</span>
           )}
         </td>
         <td className="px-4 py-3">
-          {row.confidence !== null ? (
+          {row.status === 'confirmed' ? (
+            <span className="text-emerald-500 text-sm font-bold">✓</span>
+          ) : row.confidence !== null ? (
             <span className={`text-xs font-medium ${row.confidence >= 90 ? 'text-emerald-600' : row.confidence >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
               {row.confidence > 0 ? `${row.confidence}%` : '—'}
             </span>
@@ -167,7 +186,7 @@ function FieldRow({ row }) {
 
       {/* Expanded inline panel */}
       {open && (
-        <tr className="border-b border-amber-100 bg-amber-50/40">
+        <tr className={`border-b ${row.status === 'blocked' ? 'border-red-100 bg-red-50/30' : 'border-amber-100 bg-amber-50/30'}`}>
           <td colSpan={5} className="px-4 py-4" onClick={e => e.stopPropagation()}>
             {row.status === 'warning' && (
               <div className="space-y-3">
@@ -185,42 +204,51 @@ function FieldRow({ row }) {
                     <p className="text-sm font-mono text-dark">{row.quantapayWillStore}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => { setConfirmed(true); setOpen(false) }}
-                  className="text-xs bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors"
-                >
-                  Understood — confirm this conversion
-                </button>
+                <div className="flex items-center gap-3">
+                  <p className="text-xs text-gray-600 shrink-0">Confirm mapping:</p>
+                  <select
+                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-dark bg-white"
+                    value={selected}
+                    onChange={e => setSelected(e.target.value)}
+                  >
+                    <option value="">— choose mapping —</option>
+                    {row.options.map(o => <option key={o}>{o}</option>)}
+                  </select>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={!selected}
+                    className="text-xs bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors disabled:opacity-40"
+                  >
+                    Confirm
+                  </button>
+                </div>
               </div>
             )}
 
-            {(row.status === 'amber' || row.status === 'red') && (
-              <div className="flex items-center gap-3">
-                <p className="text-xs text-gray-600 shrink-0">Select the correct field in QuantapayAI:</p>
-                <select
-                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-dark bg-white flex-1 max-w-xs"
-                  value={selected}
-                  onChange={e => setSelected(e.target.value)}
-                >
-                  <option value="">— choose mapping —</option>
-                  {row.options.map(o => <option key={o}>{o}</option>)}
-                </select>
-                <button
-                  onClick={() => { setConfirmed(true); setOpen(false) }}
-                  disabled={!selected}
-                  className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40"
-                >
-                  Confirm
-                </button>
-              </div>
-            )}
-
-            {row.status === 'blocked' && (
-              <div className="flex items-start gap-2">
-                <span className="text-red-500 shrink-0">⛔</span>
-                <div>
-                  <p className="text-xs font-semibold text-red-700 mb-1">Cannot be skipped</p>
+            {(row.status === 'amber' || row.status === 'red' || row.status === 'blocked') && (
+              <div className="space-y-3">
+                {row.status === 'blocked' && (
                   <p className="text-xs text-red-600 leading-relaxed">{row.blockedReason}</p>
+                )}
+                <div className="flex items-center gap-3">
+                  <p className="text-xs text-gray-600 shrink-0">
+                    {row.status === 'blocked' ? 'Select a mapping to unblock:' : 'Select the correct field in QuantapayAI:'}
+                  </p>
+                  <select
+                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-dark bg-white flex-1 max-w-xs"
+                    value={selected}
+                    onChange={e => setSelected(e.target.value)}
+                  >
+                    <option value="">— choose mapping —</option>
+                    {row.options.map(o => <option key={o}>{o}</option>)}
+                  </select>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={!selected}
+                    className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40"
+                  >
+                    Confirm
+                  </button>
                 </div>
               </div>
             )}
@@ -231,28 +259,105 @@ function FieldRow({ row }) {
   )
 }
 
+function PreviewModal({ rows, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-start justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-dark">Preview with real data</h3>
+            <p className="text-xs text-muted mt-0.5">5 sample employee records pulled through your current mapping. Review before confirming.</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-dark text-lg leading-none mt-0.5">✕</button>
+        </div>
+
+        <div className="overflow-auto flex-1 px-6 py-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2.5 h-2.5 rounded-sm bg-amber-300 inline-block" />
+            <span className="text-xs text-muted">Amber rows = format conversion applied automatically</span>
+          </div>
+          <table className="w-full min-w-[700px] text-xs">
+            <thead>
+              <tr className="border-b border-gray-200">
+                {['Employee', 'ID', 'Start Date', 'Annual Salary', 'Worker Type', 'Work Schedule', 'Pay Group'].map(h => (
+                  <th key={h} className="text-left text-xs font-semibold text-muted px-3 py-2">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {PREVIEW_EMPLOYEES.map((emp) => {
+                const salaryRow = rows.find(r => r.id === 'salary')
+                const showWarning = salaryRow?.status !== 'confirmed'
+                return (
+                  <tr key={emp.id} className="border-b border-gray-100">
+                    <td className="px-3 py-2.5 font-medium text-dark">{emp.name}</td>
+                    <td className="px-3 py-2.5 font-mono text-gray-500">{emp.id}</td>
+                    <td className="px-3 py-2.5 text-gray-600">{emp.startDate}</td>
+                    <td className={`px-3 py-2.5 ${showWarning ? 'bg-amber-50' : ''}`}>
+                      <span className="font-mono text-gray-700">{emp.salary}</span>
+                      {showWarning && (
+                        <span className="ml-2 text-amber-600 text-xs">→ will convert automatically</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5 font-mono text-gray-600">{emp.workerType}</td>
+                    <td className="px-3 py-2.5 font-mono text-gray-600">{emp.schedule}</td>
+                    <td className="px-3 py-2.5 font-mono text-gray-600">{emp.payGroup}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+          <button onClick={onClose} className="text-sm text-muted border border-gray-200 rounded-xl px-4 py-2 hover:bg-gray-50 transition-colors">
+            Edit mappings
+          </button>
+          <button onClick={onClose} className="text-sm font-semibold bg-blue-600 text-white rounded-xl px-5 py-2 hover:bg-blue-700 transition-colors">
+            Looks good — continue
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Part4FieldMapping() {
+  const [rows, setRows] = useState(INITIAL_ROWS)
+  const [showPreview, setShowPreview] = useState(false)
   const [savedLater, setSavedLater] = useState(false)
-  const hasBlocking = ROWS.some(r => r.blockingGoLive)
+
+  const handleConfirm = (id, value) => {
+    setRows(prev => prev.map(r =>
+      r.id === id
+        ? { ...r, mapsTo: value, status: 'confirmed', confidence: 100, blockingGoLive: false }
+        : r
+    ))
+  }
+
+  const hasBlocking = rows.some(r => r.blockingGoLive && r.status !== 'confirmed')
+  const allResolved = !hasBlocking
 
   return (
     <div className="space-y-6">
+      {showPreview && <PreviewModal rows={rows} onClose={() => setShowPreview(false)} />}
+
       <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
         <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
         <p className="text-xs text-muted leading-relaxed">
-          "Go Live" is intentionally absent from this screen. It only appears after the admin has previewed the mapping against real employee data — preventing misconfigured fields from going live silently. Blocking rows (⛔) cannot be skipped: they stay red until resolved.
+          "Go Live" is intentionally absent from this screen. It only appears after the admin has previewed the mapping against real employee data — preventing misconfigured fields from going live silently. Blocking rows (⛔) must be resolved before Go Live unlocks.
         </p>
       </div>
 
       <div className="bg-[#f5f6fa] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
 
-        {/* Mock product nav */}
+        {/* Mock product nav — no step indicator */}
         <div className="bg-[#0f172a] px-6 py-3 flex items-center gap-2">
           <span className="text-white text-sm font-semibold">QuantapayAI</span>
           <span className="text-slate-500 text-sm">|</span>
           <span className="text-slate-400 text-sm">Setup</span>
           <span className="text-slate-500 text-sm">|</span>
-          <span className="text-slate-300 text-sm font-medium">Step 2 of 3: Map Your Fields</span>
+          <span className="text-slate-300 text-sm font-medium">Map Your Fields</span>
         </div>
 
         {/* Status summary bar */}
@@ -269,21 +374,27 @@ export default function Part4FieldMapping() {
             <span className="text-red-600 font-semibold">✕</span>
             <span className="text-dark font-medium">2 fields unmapped</span>
           </span>
-          {hasBlocking && (
-            <span className="ml-auto text-xs bg-red-50 border border-red-200 text-red-700 px-2.5 py-1 rounded-full font-medium">
-              ⛔ 1 blocking issue — Go Live unavailable
-            </span>
-          )}
+          <span className="ml-auto">
+            {allResolved ? (
+              <span className="text-xs bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full font-medium">
+                ✓ All fields mapped — ready to preview
+              </span>
+            ) : (
+              <span className="text-xs bg-red-50 border border-red-200 text-red-700 px-2.5 py-1 rounded-full font-medium">
+                ⛔ 1 blocking issue — Go Live unavailable
+              </span>
+            )}
+          </span>
         </div>
 
         {/* Legend */}
         <div className="px-6 pt-3 pb-1 flex items-center gap-4 flex-wrap">
           {[
             { color: 'bg-emerald-400', label: 'Auto-confirmed (>90%)' },
-            { color: 'bg-amber-400', label: 'Needs review (60–90%)' },
-            { color: 'bg-red-400', label: 'Unmapped' },
-            { color: 'bg-red-600', label: 'Blocking' },
-            { color: 'bg-gray-300', label: 'PII — locked 🔒' },
+            { color: 'bg-amber-400',   label: 'Needs review (60–90%)' },
+            { color: 'bg-red-400',     label: 'Unmapped' },
+            { color: 'bg-red-600',     label: 'Blocking' },
+            { color: 'bg-gray-300',    label: 'PII — locked 🔒' },
           ].map(l => (
             <span key={l.label} className="flex items-center gap-1.5 text-xs text-muted">
               <span className={`w-2.5 h-2.5 rounded-sm ${l.color}`} />
@@ -303,31 +414,29 @@ export default function Part4FieldMapping() {
               </tr>
             </thead>
             <tbody>
-              {ROWS.map(row => <FieldRow key={row.id} row={row} />)}
+              {rows.map(row => <FieldRow key={row.id} row={row} onConfirm={handleConfirm} />)}
             </tbody>
           </table>
         </div>
 
-        {/* Bottom actions */}
-        <div className="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-between flex-wrap gap-3">
-          <button className="text-sm text-muted border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors">
-            ← Back
-          </button>
-          <div className="flex items-center gap-3 flex-wrap">
-            {savedLater ? (
-              <span className="text-xs text-emerald-600 font-medium">✓ Progress saved</span>
-            ) : (
-              <button
-                onClick={() => setSavedLater(true)}
-                className="text-sm text-muted border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors"
-              >
-                Save and continue later
-              </button>
-            )}
-            <button className="text-sm font-semibold rounded-xl px-5 py-2.5 transition-colors bg-blue-600 text-white hover:bg-blue-700">
-              Preview with real data →
+        {/* Bottom actions — no Back button */}
+        <div className="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-end gap-3 flex-wrap">
+          {savedLater ? (
+            <span className="text-xs text-emerald-600 font-medium">✓ Progress saved</span>
+          ) : (
+            <button
+              onClick={() => setSavedLater(true)}
+              className="text-sm text-muted border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors"
+            >
+              Save and continue later
             </button>
-          </div>
+          )}
+          <button
+            onClick={() => setShowPreview(true)}
+            className="text-sm font-semibold rounded-xl px-5 py-2.5 transition-colors bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Preview with real data →
+          </button>
         </div>
       </div>
     </div>

@@ -6,11 +6,14 @@ import Part2FieldMapping from './components/Part2FieldMapping'
 import Part2AnomalyDetection from './components/Part2AnomalyDetection'
 import Part2TrustWarning from './components/Part2TrustWarning'
 import Part2AIToolsAsPM from './components/Part2AIToolsAsPM'
+import Part3BuildBuy from './components/Part3BuildBuy'
+import Part3Sequencing from './components/Part3Sequencing'
+import Part3DataGaps from './components/Part3DataGaps'
 
 const PARTS = [
   { id: 'part1', label: 'Part 1: Designing the Integration', available: true },
   { id: 'part2', label: 'Part 2: AI in the Integration Layer', available: true },
-  { id: 'part3', label: 'Part 3', available: false },
+  { id: 'part3', label: 'Part 3: Prioritization', available: true },
   { id: 'part4', label: 'Part 4', available: false },
 ]
 
@@ -43,6 +46,7 @@ export default function App() {
   const [activePart, setActivePart] = useState('part1')
   const [p1Section, setP1Section] = useState('dataflow')
   const [p2Section, setP2Section] = useState('fieldmapping')
+  const [p3Section, setP3Section] = useState('buildbuy')
 
   const handlePartSwitch = (partId) => {
     setActivePart(partId)
@@ -159,8 +163,48 @@ export default function App() {
         </div>
       )}
 
-      {/* Parts 3 & 4 */}
-      {(activePart === 'part3' || activePart === 'part4') && (
+      {/* Part 3 */}
+      {activePart === 'part3' && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="mb-8">
+            <span className="text-xs font-medium text-primary bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">
+              Case Study · Part 3 of 4
+            </span>
+            <h1 className="text-2xl font-bold text-dark mt-3 mb-2">Prioritization</h1>
+            <p className="text-sm text-muted max-w-2xl leading-relaxed">
+              Which integrations to build, which to partner, and in what order — based on revenue already at risk, not predicted impact.
+            </p>
+          </div>
+          <div className="flex items-center gap-1 border-b border-gray-100 mb-8">
+            {[
+              { id: 'buildbuy', label: 'Build / Buy / Partner' },
+              { id: 'sequencing', label: 'Sequencing' },
+              { id: 'datagaps', label: 'What Would Change This' },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setP3Section(s.id)}
+                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
+                  p3Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
+                }`}
+              >
+                {s.label}
+                {p3Section === s.id && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+                )}
+              </button>
+            ))}
+          </div>
+          <div>
+            {p3Section === 'buildbuy' && <Part3BuildBuy />}
+            {p3Section === 'sequencing' && <Part3Sequencing />}
+            {p3Section === 'datagaps' && <Part3DataGaps />}
+          </div>
+        </div>
+      )}
+
+      {/* Part 4 */}
+      {activePart === 'part4' && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ComingSoon label={PARTS.find(p => p.id === activePart)?.label} />
         </div>

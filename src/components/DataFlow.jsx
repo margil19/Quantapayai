@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+const LS_TRIGGER_HINT = 'qpai_trigger_hint_dismissed'
+
 const STAGES = [
   {
     id: 'workday',
@@ -81,7 +83,7 @@ function DesignChip() {
     <span className="inline-flex flex-col gap-1">
       <button
         onClick={() => setOpen(!open)}
-        className="text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5 self-start"
+        className="info-pulse-target text-xs text-muted hover:text-primary transition-colors flex items-center gap-1 border border-gray-200 rounded-full px-2 py-0.5 self-start"
       >
         <span>ⓘ</span> Why does QuantapayAI check Workday on a schedule instead of getting instant alerts?
       </button>
@@ -129,6 +131,15 @@ export default function DataFlow() {
   const [activeStage, setActiveStage] = useState(-1)
   const [tooltip, setTooltip] = useState(null)
 
+  // CHANGE 4 — trigger hint banner (first session only)
+  const [showTriggerHint, setShowTriggerHint] = useState(
+    () => !localStorage.getItem(LS_TRIGGER_HINT)
+  )
+  const dismissTriggerHint = () => {
+    localStorage.setItem(LS_TRIGGER_HINT, '1')
+    setShowTriggerHint(false)
+  }
+
   const trigger = (name) => {
     if (animating) return
     setActive(name)
@@ -163,6 +174,22 @@ export default function DataFlow() {
         </p>
         <DesignChip />
       </div>
+
+      {/* CHANGE 4 — first-visit trigger hint */}
+      {showTriggerHint && (
+        <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 -mt-2">
+          <p className="text-xs text-amber-800 leading-relaxed">
+            👇 <span className="font-semibold">Start here</span> — click <em>New Hire</em>, <em>Salary Change</em>, or <em>Termination</em> to watch the integration run in real time.
+          </p>
+          <button
+            onClick={dismissTriggerHint}
+            className="text-amber-400 hover:text-amber-600 transition-colors shrink-0 text-sm leading-none"
+            aria-label="Dismiss hint"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Trigger buttons */}
       <div className="flex flex-wrap gap-3">

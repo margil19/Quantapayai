@@ -18,3 +18,14 @@
   0% { transform: translateX(0); opacity: 1; }
   100% { transform: translateX(100%); opacity: 0; }
 }
+
+/* Onboarding — ⓘ pulse ring (active during first session hint period) */
+@keyframes info-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(113, 77, 255, 0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(113, 77, 255, 0); }
+}
+
+.info-pulse-active .info-pulse-target {
+  animation: info-pulse 1.4s ease-in-out infinite;
+  border-color: #714dff !important;
+}

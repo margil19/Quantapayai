@@ -70,47 +70,7 @@ function SectionProgress({ sections, activeId }) {
   )
 }
 
-// ─── SideNav ─────────────────────────────────────────────────────────────────
-function SideNav({ sections, activeId, onSelect }) {
-  const activeIdx = sections.findIndex((s) => s.id === activeId)
-  return (
-    <>
-      {/* md+ — labelled sidebar */}
-      <div className="hidden md:block w-36 shrink-0 self-start sticky top-[57px]">
-        <div className="space-y-0.5">
-          {sections.map((s) => {
-            const isActive = s.id === activeId
-            return (
-              <button
-                key={s.id}
-                onClick={() => { onSelect(s.id); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                className={`block w-full text-left text-xs px-3 py-2 rounded-lg transition-colors border-l-2 ${
-                  isActive
-                    ? 'text-primary font-semibold bg-purple-50 border-primary'
-                    : 'text-muted hover:text-dark hover:bg-gray-50 border-transparent'
-                }`}
-              >
-                {s.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-      {/* sm — thin progress rail */}
-      <div className="md:hidden w-1.5 shrink-0 self-stretch mt-1">
-        <div className="relative h-full rounded-full bg-gray-100 overflow-hidden">
-          <div
-            className="absolute w-full rounded-full bg-primary transition-all duration-300"
-            style={{
-              top: `${(activeIdx / sections.length) * 100}%`,
-              height: `${(1 / sections.length) * 100}%`,
-            }}
-          />
-        </div>
-      </div>
-    </>
-  )
-}
+
 
 // ─── NextNudge ────────────────────────────────────────────────────────────────
 function NextNudge({ text, dest, onClick }) {
@@ -352,7 +312,6 @@ export default function App() {
           <SubTabs sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
           <SectionProgress sections={PART1_SECTIONS} activeId={p1Section} />
           <div className="flex gap-8">
-            <SideNav sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
             <div className="flex-1 min-w-0">
               {p1Section === 'dataflow' && (
                 <>
@@ -404,7 +363,6 @@ export default function App() {
           <SubTabs sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
           <SectionProgress sections={PART2_SECTIONS} activeId={p2Section} />
           <div className="flex gap-8">
-            <SideNav sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
             <div className="flex-1 min-w-0">
               {p2Section === 'fieldmapping' && (
                 <>
@@ -466,7 +424,6 @@ export default function App() {
           <SubTabs sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
           <SectionProgress sections={PART3_SECTIONS} activeId={p3Section} />
           <div className="flex gap-8">
-            <SideNav sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
             <div className="flex-1 min-w-0">
               {p3Section === 'buildbuy' && (
                 <>
@@ -518,7 +475,6 @@ export default function App() {
           <SubTabs sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
           <SectionProgress sections={PART4_SECTIONS} activeId={p4Section} />
           <div className="flex gap-8">
-            <SideNav sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
             <div className="flex-1 min-w-0">
               {p4Section === 'syncfailure' && (
                 <>

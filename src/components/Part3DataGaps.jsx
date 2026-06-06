@@ -20,12 +20,12 @@ const GAPS = [
   {
     dataPoint: 'Does an existing connector already cover this HRIS?',
     why: "The Custom HRIS at position 4 requires an immediate lookup — does an off-the-shelf connector already exist for this system? This is a hours-long research task, not a build decision.",
-    shift: 'If a connector exists, the decision becomes buy vs. scope — and position 4 resolves fast. If nothing exists, the commercial pricing conversation becomes the critical path.',
+    shift: "If a connector exists, buy it — deal closes fast. If nothing exists, do not build. Walk away or renegotiate the deal terms entirely.",
     affects: 'Position 4 resolution',
   },
   {
     dataPoint: 'Do any of the 3 Rippling prospects actually convert?',
-    why: "Do any of the 3 prospects have Rippling integration as a hard requirement to sign? And what is Rippling's current stance on third party payroll integrations — is there any formal API access policy or partnership program that would reduce the risk of building native?",
+    why: "Do any of the 3 prospects have Rippling integration as a hard requirement to sign? The bigger question is whether the segment is real at all — 3 prospects who haven't committed is the thinnest signal in the backlog.",
     shift: "If prospects convert without needing a native build, Partner via Merge is confirmed as sufficient. If prospects require native and Rippling has a formal partner program with API stability guarantees, native build moves up the priority stack.",
     affects: 'Rippling decision',
   },

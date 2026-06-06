@@ -13,11 +13,50 @@ const FIELDS = [
   { workday: 'Custom_Attr_EOR_Flag', quantapay: null, confidence: 0, sample: 'TRUE', status: 'unknown' },
 ]
 
-const MANUAL_FIELDS = [
-  'Worker_ID', 'Legal_Name_First', 'Legal_Name_Last', 'Hire_Date',
-  'Annual_Base_Salary', 'Worker_Type', 'Work_Location_Country',
-  'Termination_Date', 'Cost_Center_Reference', 'Custom_Attr_EOR_Flag',
+const MANUAL_FIELDS_SIMPLE = [
+  { name: 'Worker_ID',              done: true  },
+  { name: 'Legal_Name_First',       done: true  },
+  { name: 'Legal_Name_Last',        done: true  },
+  { name: 'Hire_Date',              done: false, dropdownKey: 'hire_date'   },
+  { name: 'Annual_Base_Salary',     done: false, dropdownKey: 'salary'      },
+  { name: 'Worker_Type',            done: false, dropdownKey: 'worker_type' },
+  { name: 'Work_Location_Country',  done: false },
+  { name: 'Termination_Date',       done: false },
+  { name: 'Cost_Center_Reference',  done: false },
+  { name: 'Custom_Attr_EOR_Flag',   done: false },
 ]
+
+const PAINFUL_DROPDOWNS = {
+  salary: [
+    '— select a field —',
+    'Total_Comp_Package',
+    'Base_Salary_Annual',
+    'Comp_Grade_Amount',
+    'Hourly_Billing_Rate',
+    'Bonus_Target_USD',
+    'Salary_Band_Midpoint',
+    'Annual_Salary_Amount',
+  ],
+  hire_date: [
+    '— select a field —',
+    'Onboarding_Start_Date',
+    'Contract_Effective_Date',
+    'Employment_Start_Date',
+    'Position_Fill_Date',
+    'Probation_Start_Date',
+    'Benefits_Eligibility_Date',
+  ],
+  worker_type: [
+    '— select a field —',
+    'Employment_Classification',
+    'Contingent_Worker_Subtype',
+    'Worker_Category_Code',
+    'Engagement_Type',
+    'Contract_Type',
+    'Resource_Type',
+    'Worker_Status',
+  ],
+}
 
 const OVERRIDE_OPTIONS = ['termination_date', 'employment_end_date', 'last_working_day', '— skip this field —']
 const OVERRIDE_OPTIONS_CC = ['cost_center_id', 'department_name', 'cost_allocation_code', '— skip this field —']
@@ -40,8 +79,6 @@ function rowBorder(status, overridden) {
 export default function Part2FieldMapping({ onFirstCardClick }) {
   const [overrides, setOverrides] = useState({})
   const [confirmed, setConfirmed] = useState(false)
-  const [manualStep, setManualStep] = useState(0)
-  const [showManual, setShowManual] = useState(true)
   const [callbackFired, setCallbackFired] = useState(false)
 
   const fireCallback = () => {
@@ -97,50 +134,35 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
             </div>
             <span className="text-xs text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">2–4 hrs</span>
           </div>
-          <div className="p-4 space-y-2">
-            {MANUAL_FIELDS.map((field, i) => {
-              const done = i < manualStep
-              const active = i === manualStep
-              return (
-                <div key={field} className={`flex items-center gap-3 px-3 py-2 rounded-lg border text-xs transition-all ${done ? 'border-gray-100 bg-gray-50 text-gray-400' : active ? 'border-primary/40 bg-purple-50' : 'border-gray-100 text-gray-300'}`}>
-                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${done ? 'bg-gray-300 border-gray-300 text-white' : active ? 'border-primary' : 'border-gray-200'}`}>
-                    {done ? '✓' : ''}
-                  </span>
-                  <span className="font-mono">{field}</span>
-                  {active && (
-                    <span className="ml-auto">
-                      <select className="text-xs border border-gray-200 rounded px-1 py-0.5 text-dark" defaultValue="">
-                        <option value="">Select field…</option>
-                        <option>employee_external_id</option>
-                        <option>legal_first_name</option>
-                        <option>annual_salary_amount</option>
-                      </select>
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-            {manualStep < MANUAL_FIELDS.length ? (
-              <button
-                onClick={() => { setManualStep(s => s + 1); fireCallback() }}
-                className="w-full mt-2 text-xs text-gray-500 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+          <div className="p-4 space-y-1.5">
+            {MANUAL_FIELDS_SIMPLE.map((field) => (
+              <div
+                key={field.name}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg border text-xs ${field.done ? 'border-gray-100 bg-gray-50 text-gray-400' : 'border-gray-200 bg-white text-dark'}`}
               >
-                Map next field ({manualStep}/{MANUAL_FIELDS.length} done)
-              </button>
-            ) : (
-              <div className="mt-2 space-y-2">
-                <div className="w-full text-xs text-center text-gray-400 border border-gray-100 rounded-lg py-2 bg-gray-50">
-                  All fields mapped — 2 hrs 47 min later
-                </div>
-                <button
-                  onClick={() => setManualStep(0)}
-                  className="w-full text-xs text-muted border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors"
-                >
-                  Reset
-                </button>
+                <span className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 text-[10px] ${field.done ? 'bg-gray-300 border-gray-300 text-white' : 'border-gray-300'}`}>
+                  {field.done ? '✓' : ''}
+                </span>
+                <span className="font-mono flex-1">{field.name}</span>
+                {field.dropdownKey ? (
+                  <select
+                    className="text-xs border border-gray-300 rounded px-1.5 py-1 text-dark bg-white max-w-[180px] truncate"
+                    defaultValue=""
+                    onChange={fireCallback}
+                  >
+                    {PAINFUL_DROPDOWNS[field.dropdownKey].map((o, i) => (
+                      <option key={o} value={i === 0 ? '' : o}>{o}</option>
+                    ))}
+                  </select>
+                ) : !field.done ? (
+                  <span className="text-gray-300 text-xs italic">not started</span>
+                ) : null}
               </div>
-            )}
+            ))}
           </div>
+          <p className="px-4 pb-4 text-xs text-gray-400 leading-relaxed">
+            An admin mapping 40 fields like this takes 2–4 hours — and one wrong pick corrupts every sync that follows.
+          </p>
         </div>
 
         {/* AFTER */}

@@ -11,12 +11,6 @@ const SCENARIOS = [
     consequence: 'The change sits unactioned in a suggestions panel. No one approves it. The employee is paid at the old rate for two cycles. A payroll correction is required. The employee loses trust.',
     jurisdiction: 'United States',
   },
-  {
-    scenario: 'Worker type: Employee → EOR in Singapore',
-    aiDecision: 'AI assigns Direct Write (high confidence — similar past changes)',
-    consequence: 'The new legal entity isn\'t set up yet. Payroll runs against the wrong entity. Tax withholding is incorrect for Singapore. A cross-border compliance failure that takes weeks to unwind.',
-    jurisdiction: 'Singapore',
-  },
 ]
 
 export default function Part2TrustWarning() {
@@ -79,6 +73,9 @@ export default function Part2TrustWarning() {
             </div>
           ))}
         </div>
+        <p className="text-xs text-muted italic mt-4 pt-3 border-t border-gray-200">
+          These are illustrative examples of the rule logic — not an exhaustive list. The full rule set expands as new action types, jurisdictions, and edge cases are added to the integration.
+        </p>
       </div>
     </div>
   )

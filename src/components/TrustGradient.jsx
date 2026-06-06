@@ -117,12 +117,12 @@ const TIERS = [
 ]
 
 
-function ActionCard({ action, tier }) {
+function ActionCard({ action, tier, onFirstCardClick }) {
   const [open, setOpen] = useState(false)
   return (
     <div
       className={`border rounded-xl p-3 cursor-pointer transition-all duration-200 ${tier.cardBorder} ${open ? 'bg-gray-50' : 'bg-white hover:bg-gray-50/60'}`}
-      onClick={() => setOpen(!open)}
+      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick() }}
     >
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium ${tier.badgeBg} px-2 py-0.5 rounded-full`}>
@@ -155,7 +155,7 @@ function ActionCard({ action, tier }) {
 }
 
 
-export default function TrustGradient() {
+export default function TrustGradient({ onFirstCardClick }) {
   return (
     <div className="space-y-8">
       <div>
@@ -183,7 +183,7 @@ export default function TrustGradient() {
             </div>
             <div className="space-y-2">
               {tier.actions.map((action) => (
-                <ActionCard key={action.name} action={action} tier={tier} />
+                <ActionCard key={action.name} action={action} tier={tier} onFirstCardClick={onFirstCardClick} />
               ))}
             </div>
           </div>

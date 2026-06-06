@@ -60,26 +60,17 @@ const PART4_SECTIONS = [
 ]
 
 // ─── Guide message logic ──────────────────────────────────────────────────────
-function getGuideMessage({ showWelcome, activePart, p1Section, p2Section, p3Section, p4Section, tourVisited, triggerClicked }) {
+// Returns the default (navigation-derived) message. Interaction overrides take priority in App state.
+function getDefaultGuideMessage({ showWelcome, activePart, p1Section, p2Section, p3Section, p4Section, tourVisited }) {
   const allVisited = PARTS.every((p) => tourVisited.includes(p.id))
 
-  if (showWelcome) {
-    return "Start by clicking 'Let's go →' to begin the tour"
-  }
-  if (allVisited) {
-    return "You've seen everything. Questions? The ⓘ icons throughout explain every PM decision."
-  }
+  if (showWelcome) return "Start by clicking 'Let's go →' to begin the tour"
+  if (allVisited)  return "You've seen everything. Questions? The ⓘ icons throughout explain every PM decision."
+
   if (activePart === 'part1') {
-    if (p1Section === 'dataflow') {
-      if (triggerClicked) return "See how each stage lights up? Now head to Trust Gradient to see how each change gets routed →"
-      return "Click New Hire, Salary Change, or Termination to watch the integration run"
-    }
-    if (p1Section === 'trust') {
-      return "Click any card to see why it was assigned that trust level"
-    }
-    if (p1Section === 'failures') {
-      return "You've seen how the integration works. Head to Part 2 to see where AI fits in →"
-    }
+    if (p1Section === 'dataflow')  return "Click New Hire, Salary Change, or Termination to watch the integration run"
+    if (p1Section === 'trust')     return "Click any card to see why it was assigned that trust level"
+    if (p1Section === 'failures')  return "You've seen how the integration works. Head to Part 2 to see where AI fits in →"
   }
   if (activePart === 'part2') {
     if (p2Section === 'fieldmapping') return "Click the AI workflow cards to see the before and after"
@@ -94,7 +85,7 @@ function getGuideMessage({ showWelcome, activePart, p1Section, p2Section, p3Sect
   }
   if (activePart === 'part4') {
     if (p4Section === 'syncfailure')  return "Try the sync failure card first — click 'Review and Fix' to see the full flow"
-    if (p4Section === 'fieldmapping') return "One more thing — we went further and built a health dashboard. This is the screen that tells you what's breaking before your customer does."
+    if (p4Section === 'fieldmapping') return "One more thing — we went further and built a health dashboard → Bonus tab"
   }
   if (activePart === 'bonus') {
     return "This is the health dashboard — the screen that tells you what's breaking before your customer does"
@@ -141,14 +132,17 @@ function GuideBubble({ message, minimized, onMinimize, onExpand }) {
       className="fixed bottom-6 left-6 z-40 w-[280px] rounded-2xl shadow-2xl overflow-hidden"
       style={{ background: '#714dff' }}
     >
-      <div className="px-4 py-3 flex items-start gap-3">
-        {/* message */}
-        <p
-          className="text-xs text-white leading-relaxed flex-1 transition-opacity duration-200"
+      <div className="px-4 py-3 flex items-start gap-2">
+        {/* message + optional animated chevron */}
+        <div
+          className="flex items-start gap-1.5 flex-1 transition-opacity duration-200"
           style={{ opacity: visible ? 1 : 0 }}
         >
-          {displayed}
-        </p>
+          <p className="text-xs text-white leading-relaxed flex-1">{displayed}</p>
+          {displayed.includes('→') && (
+            <span className="animate-nudge-x shrink-0 text-white/70 text-sm leading-none mt-0.5">›</span>
+          )}
+        </div>
         {/* minimise */}
         <button
           onClick={onMinimize}
@@ -362,8 +356,19 @@ export default function App() {
   })
 
   // Guide bubble
-  const [guideMinimized,  setGuideMinimized]  = useState(false)  // session only
-  const [triggerClicked,  setTriggerClicked]  = useState(false)  // first pipeline trigger
+  const [guideMinimized,    setGuideMinimized]    = useState(false)   // session only
+  const [interactionOverride, setInteractionOverride] = useState(null) // set on click, cleared on navigation
+
+  // Clear interaction override whenever the user navigates to a new part or section
+  useEffect(() => { setInteractionOverride(null) }, [activePart, p1Section, p2Section, p3Section, p4Section]) // eslint-disable-line
+
+  // Interaction callbacks — each fires the instant the user clicks the target element
+  const onPipelineTrigger  = () => setInteractionOverride("Watch each stage light up — when you're ready, scroll down to Trust Gradient →")
+  const onTrustCardClick   = () => setInteractionOverride("Good — explore the other tiers too, then scroll down to Failure Modes →")
+  const onFailureModeClick = () => setInteractionOverride("You've seen the full integration. Head to Part 2 to see where AI fits in →")
+  const onPart2CardClick   = () => setInteractionOverride("Now see which integrations to prioritize → Part 3")
+  const onPart3CardClick   = () => setInteractionOverride("Go through all five decisions, then head to Part 4 to see the admin experience →")
+  const onReviewAndFix     = () => setInteractionOverride("You've covered all four parts. One more thing → check the Bonus tab")
 
   // Mark current part visited
   useEffect(() => {
@@ -398,16 +403,9 @@ export default function App() {
 
   const showTourBar = !tourDismissed && !showWelcome
 
-  // Derive guide message from current state
-  const guideMessage = getGuideMessage({
-    showWelcome,
-    activePart,
-    p1Section,
-    p2Section,
-    p3Section,
-    p4Section,
-    tourVisited,
-    triggerClicked,
+  // Guide message: interaction override takes priority; falls back to navigation-derived message
+  const guideMessage = interactionOverride || getDefaultGuideMessage({
+    showWelcome, activePart, p1Section, p2Section, p3Section, p4Section, tourVisited,
   })
 
   return (
@@ -477,7 +475,7 @@ export default function App() {
             <div className="flex-1 min-w-0">
               {p1Section === 'dataflow' && (
                 <>
-                  <DataFlow onFirstTrigger={() => setTriggerClicked(true)} />
+                  <DataFlow onFirstTrigger={onPipelineTrigger} />
                   <NextNudge
                     text="Next: see how each change gets routed"
                     dest="Trust Gradient"
@@ -487,7 +485,7 @@ export default function App() {
               )}
               {p1Section === 'trust' && (
                 <>
-                  <TrustGradient />
+                  <TrustGradient onFirstCardClick={onTrustCardClick} />
                   <NextNudge
                     text="Next: what happens when things go wrong"
                     dest="Failure Modes"
@@ -497,7 +495,7 @@ export default function App() {
               )}
               {p1Section === 'failures' && (
                 <>
-                  <FailureModes />
+                  <FailureModes onFirstCardClick={onFailureModeClick} />
                   <NextNudge
                     text="You've seen how the integration works. Next: where AI fits in"
                     dest="Part 2"
@@ -529,7 +527,7 @@ export default function App() {
             <div className="flex-1 min-w-0">
               {p2Section === 'fieldmapping' && (
                 <>
-                  <Part2FieldMapping />
+                  <Part2FieldMapping onFirstCardClick={onPart2CardClick} />
                   <NextNudge
                     text="Next: see what happens when the data looks wrong"
                     dest="Anomaly Detection"
@@ -591,7 +589,7 @@ export default function App() {
             <div className="flex-1 min-w-0">
               {p3Section === 'buildbuy' && (
                 <>
-                  <Part3BuildBuy />
+                  <Part3BuildBuy onFirstCardClick={onPart3CardClick} />
                   <NextNudge
                     text="Next: see them ordered by priority"
                     dest="Sequencing"
@@ -643,7 +641,7 @@ export default function App() {
             <div className="flex-1 min-w-0">
               {p4Section === 'syncfailure' && (
                 <>
-                  <Part4SyncFailure />
+                  <Part4SyncFailure onReviewClick={onReviewAndFix} />
                   <NextNudge
                     text="Next: how the admin sets up field mapping"
                     dest="Field Mapping Configuration"

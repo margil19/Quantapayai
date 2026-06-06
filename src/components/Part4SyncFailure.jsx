@@ -5,7 +5,7 @@ const QUANTAPAY_RECEIVED = '920000.00'
 const CORRECT_VALUE = '92000.00'
 const CURRENCY = 'USD'
 
-export default function Part4SyncFailure() {
+export default function Part4SyncFailure({ onReviewClick }) {
   const [expanded, setExpanded] = useState(false)
   const [fixed, setFixed] = useState(false)
   const [dismissed, setDismissed] = useState(false)
@@ -128,7 +128,7 @@ export default function Part4SyncFailure() {
             {!expanded && (
               <div className="px-6 pb-5 flex flex-wrap items-center gap-3">
                 <button
-                  onClick={() => setExpanded(true)}
+                  onClick={() => { setExpanded(true); if (onReviewClick) onReviewClick() }}
                   className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl px-5 py-2.5 transition-colors"
                 >
                   Review and Fix →

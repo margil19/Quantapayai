@@ -50,7 +50,7 @@ const ROWS = [
   },
 ]
 
-export default function Part3BuildBuy() {
+export default function Part3BuildBuy({ onFirstCardClick }) {
   const [open, setOpen] = useState(null)
 
   return (
@@ -76,7 +76,7 @@ export default function Part3BuildBuy() {
             <div
               key={row.hris}
               className={`border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${isOpen ? `${d.light} border` : 'border-gray-200 bg-white hover:border-gray-300'}`}
-              onClick={() => setOpen(isOpen ? null : row.hris)}
+              onClick={() => { setOpen(isOpen ? null : row.hris); if (!isOpen && onFirstCardClick) onFirstCardClick() }}
             >
               <div className="px-5 py-4 flex items-center gap-4">
                 {/* Decision badge — first thing the eye lands on */}

@@ -37,11 +37,19 @@ function rowBorder(status, overridden) {
   return 'border-l-4 border-l-red-500 bg-red-50/20'
 }
 
-export default function Part2FieldMapping() {
+export default function Part2FieldMapping({ onFirstCardClick }) {
   const [overrides, setOverrides] = useState({})
   const [confirmed, setConfirmed] = useState(false)
   const [manualStep, setManualStep] = useState(0)
   const [showManual, setShowManual] = useState(true)
+  const [callbackFired, setCallbackFired] = useState(false)
+
+  const fireCallback = () => {
+    if (!callbackFired && onFirstCardClick) {
+      onFirstCardClick()
+      setCallbackFired(true)
+    }
+  }
 
   const handleOverride = (fieldName, value) => {
     setOverrides(prev => ({ ...prev, [fieldName]: value }))
@@ -114,7 +122,7 @@ export default function Part2FieldMapping() {
             })}
             {manualStep < MANUAL_FIELDS.length ? (
               <button
-                onClick={() => setManualStep(s => s + 1)}
+                onClick={() => { setManualStep(s => s + 1); fireCallback() }}
                 className="w-full mt-2 text-xs text-gray-500 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors"
               >
                 Map next field ({manualStep}/{MANUAL_FIELDS.length} done)

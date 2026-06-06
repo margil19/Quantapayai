@@ -62,14 +62,14 @@ const FAILURE_MODES = [
 ]
 
 
-function FMCard({ fm }) {
+function FMCard({ fm, onFirstCardClick }) {
   const [open, setOpen] = useState(false)
   const catColor = CATEGORY_COLORS[fm.category] || 'bg-gray-100 text-gray-600'
 
   return (
     <div
       className={`border rounded-xl transition-all duration-200 cursor-pointer ${open ? 'border-primary/30 bg-purple-50/30' : 'border-gray-200 bg-white hover:border-gray-300'}`}
-      onClick={() => setOpen(!open)}
+      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick() }}
     >
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-2">
@@ -109,7 +109,7 @@ function FMCard({ fm }) {
   )
 }
 
-export default function FailureModes() {
+export default function FailureModes({ onFirstCardClick }) {
   return (
     <div className="space-y-8">
       <div>
@@ -121,7 +121,7 @@ export default function FailureModes() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {FAILURE_MODES.map((fm) => (
-          <FMCard key={fm.id} fm={fm} />
+          <FMCard key={fm.id} fm={fm} onFirstCardClick={onFirstCardClick} />
         ))}
       </div>
 

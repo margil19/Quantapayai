@@ -175,7 +175,7 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
             <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">15–20 min</span>
           </div>
           <div className="p-4">
-            <div className="flex items-center gap-3 text-xs text-muted mb-3 px-1">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 px-1">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"/> Auto-confirmed (&gt;90%)</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block"/> Needs review (60–90%)</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"/> Flag (&lt;60%)</span>
@@ -187,8 +187,8 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
                 const borderCls = rowBorder(f.status, isOverridden)
                 return (
                   <div key={f.workday} className={`rounded-lg border border-gray-100 px-3 py-2 ${borderCls}`}>
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="font-mono text-gray-700 w-44 shrink-0 truncate">{f.workday}</span>
+                    <div className="flex items-center gap-2 text-xs min-w-0">
+                      <span className="font-mono text-gray-700 w-32 shrink-0 truncate">{f.workday}</span>
                       <span className="text-gray-300 shrink-0">→</span>
                       {f.status === 'unknown' ? (
                         <select

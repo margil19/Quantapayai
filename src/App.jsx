@@ -24,7 +24,7 @@ const PARTS = [
   { id: 'part2', label: 'Part 2: AI in the Integration Layer', available: true },
   { id: 'part3', label: 'Part 3: Prioritization', available: true },
   { id: 'part4', label: 'Part 4: Error UX', available: true },
-  { id: 'bonus', label: 'Bonus: Health Dashboard', available: true, bonus: true },
+  { id: 'bonus', label: 'Bonus', available: true, bonus: true },
 ]
 
 const TOUR_STEPS = [
@@ -94,7 +94,7 @@ function getGuideMessage({ showWelcome, activePart, p1Section, p2Section, p3Sect
   }
   if (activePart === 'part4') {
     if (p4Section === 'syncfailure')  return "Try the sync failure card first — click 'Review and Fix' to see the full flow"
-    if (p4Section === 'fieldmapping') return "You've covered all 4 parts. We built one more thing nobody asked for → check the Bonus tab"
+    if (p4Section === 'fieldmapping') return "One more thing — we went further and built a health dashboard. This is the screen that tells you what's breaking before your customer does."
   }
   if (activePart === 'bonus') {
     return "This is the health dashboard — the screen that tells you what's breaking before your customer does"
@@ -126,7 +126,7 @@ function GuideBubble({ message, minimized, onMinimize, onExpand }) {
       <button
         onClick={onExpand}
         title="Show guide"
-        className="fixed bottom-6 right-6 z-40 group"
+        className="fixed bottom-6 left-6 z-40 group"
       >
         <div
           className="w-4 h-4 rounded-full shadow-lg transition-transform duration-200 group-hover:scale-[2.5]"
@@ -138,7 +138,7 @@ function GuideBubble({ message, minimized, onMinimize, onExpand }) {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-40 w-[280px] rounded-2xl shadow-2xl overflow-hidden"
+      className="fixed bottom-6 left-6 z-40 w-[280px] rounded-2xl shadow-2xl overflow-hidden"
       style={{ background: '#714dff' }}
     >
       <div className="px-4 py-3 flex items-start gap-3">
@@ -256,7 +256,7 @@ function WelcomeModal({ onDismiss }) {
             ['Part 2 — AI in the Integration Layer', "See where AI helps and where it shouldn't"],
             ['Part 3 — Prioritization', 'Click each HRIS card to see the build / buy / partner decision'],
             ['Part 4 — Error UX', 'Interact with the wireframes like a real product'],
-            ['Bonus — Health Dashboard', 'The dashboard no one asked for but every ops team needs'],
+            ['Bonus — Health Dashboard', 'We went further — the dashboard every ops team needs'],
           ].map(([title, desc], i) => (
             <li key={i} className="flex items-start gap-3 text-sm">
               <span className="text-primary font-semibold shrink-0 w-5 text-center">{CIRCLE[i]}</span>
@@ -655,7 +655,7 @@ export default function App() {
                 <>
                   <Part4FieldMapping />
                   <NextNudge
-                    text="You've covered all 4 parts. One more thing we built"
+                    text="You've covered all 4 parts. We went further —"
                     dest="Bonus"
                     onClick={() => { handlePartSwitch('bonus'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                   />
@@ -672,12 +672,12 @@ export default function App() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-medium text-accent bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-                Bonus — beyond required scope
+                Bonus — we went further
               </span>
             </div>
             <h1 className="text-2xl font-bold text-dark mb-2">Integration Health Dashboard</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              Internal operations view — which tenants need action before payroll locks, what's failing, and how fast HR teams are responding to approval requests.
+              Parts 1 through 4 answer what was asked. This goes further — because integrations aren't just built, they're operated.
             </p>
           </div>
           <BonusDashboard />

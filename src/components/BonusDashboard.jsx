@@ -73,17 +73,17 @@ const AT_RISK = [
 
 // ─── CHART DATA ───────────────────────────────────────────────────────────────
 const FAILURE_TYPES = [
-  { label: 'Data mapping errors',       pct: 44, count: 127, color: 'bg-red-500',    trend: '↑ trending up', trendColor: 'text-red-500' },
-  { label: 'Approval queue timeout',    pct: 28, count: 81,  color: 'bg-amber-400',  trend: null },
-  { label: 'Partner API regressions',   pct: 18, count: 52,  color: 'bg-blue-500',   trend: null },
-  { label: 'Config errors',             pct: 10, count: 29,  color: 'bg-gray-400',   trend: null },
+  { label: 'Data mapping errors',       pct: 44, count: 127, color: 'bg-red-500',    tooltipBg: '#ef4444', trend: '↑ trending up', trendColor: 'text-red-500' },
+  { label: 'Approval queue timeout',    pct: 28, count: 81,  color: 'bg-amber-400',  tooltipBg: '#fbbf24', trend: null },
+  { label: 'Partner API regressions',   pct: 18, count: 52,  color: 'bg-blue-500',   tooltipBg: '#3b82f6', trend: null },
+  { label: 'Config errors',             pct: 10, count: 29,  color: 'bg-gray-400',   tooltipBg: '#9ca3af', trend: null },
 ]
 
 const APPROVAL_TIMES = [
-  { label: 'Under 2 hours',  pct: 58, count: 214, color: 'bg-emerald-500' },
-  { label: '2 – 12 hours',   pct: 27, count: 100, color: 'bg-teal-500' },
-  { label: '12 – 48 hours',  pct: 12, count: 44,  color: 'bg-amber-400' },
-  { label: 'Over 48 hours',  pct: 3,  count: 11,  color: 'bg-red-500' },
+  { label: 'Under 2 hours',  pct: 58, count: 214, color: 'bg-emerald-500', tooltipBg: '#10b981' },
+  { label: '2 – 12 hours',   pct: 27, count: 100, color: 'bg-teal-500',   tooltipBg: '#14b8a6' },
+  { label: '12 – 48 hours',  pct: 12, count: 44,  color: 'bg-amber-400',  tooltipBg: '#fbbf24' },
+  { label: 'Over 48 hours',  pct: 3,  count: 11,  color: 'bg-red-500',    tooltipBg: '#ef4444' },
 ]
 
 // ─── SLIDE-IN PANEL ───────────────────────────────────────────────────────────
@@ -154,8 +154,11 @@ function HBar({ item }) {
           style={{ width: `${item.pct}%` }}
         />
         {hovered && (
-          <div className="absolute inset-0 flex items-center px-3">
-            <span className="text-xs font-semibold text-white drop-shadow">
+          <div className="absolute inset-0 flex items-center px-2">
+            <span
+              className="text-xs font-semibold text-white px-2 py-0.5 rounded-md"
+              style={{ background: item.tooltipBg }}
+            >
               {item.count} tenants · {item.pct}%
             </span>
           </div>

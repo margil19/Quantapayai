@@ -54,7 +54,7 @@ export default function Part2AIToolsAsPM() {
           <div key={t.tool} className={`border rounded-xl p-5 ${t.color}`}>
             <div className="flex items-start justify-between gap-2 mb-3">
               <span className="text-sm font-semibold text-dark">{t.tool}</span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${t.badge}`}>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium text-right max-w-[55%] leading-snug ${t.badge}`}>
                 {t.task.split(',')[0]}
               </span>
             </div>

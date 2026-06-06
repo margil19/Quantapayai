@@ -59,18 +59,41 @@ const PART4_SECTIONS = [
   { id: 'fieldmapping', label: 'Field Mapping Configuration' },
 ]
 
-// ─── SectionProgress ─────────────────────────────────────────────────────────
-function SectionProgress({ sections, activeId }) {
+// ─── SideNav (vertical sticky) ───────────────────────────────────────────────
+function SideNav({ sections, activeId, onSelect }) {
   const idx = sections.findIndex((s) => s.id === activeId)
-  if (idx === -1) return null
   return (
-    <p className="text-xs text-muted mt-2 mb-8">
-      Section {idx + 1} of {sections.length}
-    </p>
+    <div className="w-44 shrink-0 self-start sticky top-[72px]">
+      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 mb-2">
+        Section {idx + 1} of {sections.length}
+      </p>
+      <div className="space-y-0.5">
+        {sections.map((s, i) => {
+          const isActive = s.id === activeId
+          const isPast   = i < idx
+          return (
+            <button
+              key={s.id}
+              onClick={() => { onSelect(s.id); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+              className={`flex items-center gap-2 w-full text-left text-xs px-3 py-2 rounded-lg transition-colors border-l-2 ${
+                isActive
+                  ? 'text-primary font-semibold bg-purple-50 border-primary'
+                  : isPast
+                  ? 'text-gray-400 hover:text-dark hover:bg-gray-50 border-gray-200'
+                  : 'text-muted hover:text-dark hover:bg-gray-50 border-transparent'
+              }`}
+            >
+              {isPast && <span className="text-emerald-500 text-[10px] shrink-0">✓</span>}
+              {isActive && <span className="w-1 h-1 rounded-full bg-primary shrink-0" />}
+              {!isPast && !isActive && <span className="w-1 h-1 rounded-full bg-gray-200 shrink-0" />}
+              <span className="leading-snug">{s.label}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }
-
-
 
 // ─── NextNudge ────────────────────────────────────────────────────────────────
 function NextNudge({ text, dest, onClick }) {
@@ -174,27 +197,6 @@ function TourBar({ visited, onNavigate, onDismiss }) {
   )
 }
 
-// ─── SubTabs (shared renderer) ────────────────────────────────────────────────
-function SubTabs({ sections, activeId, onSelect }) {
-  return (
-    <div className="flex items-center gap-1 border-b border-gray-100">
-      {sections.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => onSelect(s.id)}
-          className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-            activeId === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-          }`}
-        >
-          {s.label}
-          {activeId === s.id && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-          )}
-        </button>
-      ))}
-    </div>
-  )
-}
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -309,9 +311,8 @@ export default function App() {
               How QuantapayAI connects to Workday HCM — covering trigger architecture, data normalization, trust-tier routing, and failure handling across a live payroll integration.
             </p>
           </div>
-          <SubTabs sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
-          <SectionProgress sections={PART1_SECTIONS} activeId={p1Section} />
-          <div className="flex gap-8">
+          <div className="flex gap-8 mt-2">
+            <SideNav sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
             <div className="flex-1 min-w-0">
               {p1Section === 'dataflow' && (
                 <>
@@ -360,9 +361,8 @@ export default function App() {
               Where AI earns its place in this integration — and where it doesn't. AI reduces manual effort on low-stakes, high-volume tasks. It never touches the logic that determines compliance.
             </p>
           </div>
-          <SubTabs sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
-          <SectionProgress sections={PART2_SECTIONS} activeId={p2Section} />
-          <div className="flex gap-8">
+          <div className="flex gap-8 mt-2">
+            <SideNav sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
             <div className="flex-1 min-w-0">
               {p2Section === 'fieldmapping' && (
                 <>
@@ -421,9 +421,8 @@ export default function App() {
               Which integrations to build, which to partner, and in what order — based on revenue already at risk, not predicted impact.
             </p>
           </div>
-          <SubTabs sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
-          <SectionProgress sections={PART3_SECTIONS} activeId={p3Section} />
-          <div className="flex gap-8">
+          <div className="flex gap-8 mt-2">
+            <SideNav sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
             <div className="flex-1 min-w-0">
               {p3Section === 'buildbuy' && (
                 <>
@@ -472,9 +471,8 @@ export default function App() {
               Two interactive product screens — how QuantapayAI surfaces a sync failure to an HR admin, and how field mapping is configured during onboarding. Both are clickable, not static.
             </p>
           </div>
-          <SubTabs sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
-          <SectionProgress sections={PART4_SECTIONS} activeId={p4Section} />
-          <div className="flex gap-8">
+          <div className="flex gap-8 mt-2">
+            <SideNav sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
             <div className="flex-1 min-w-0">
               {p4Section === 'syncfailure' && (
                 <>

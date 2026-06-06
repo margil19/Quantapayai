@@ -115,7 +115,7 @@ export default function FailureModes({ onFirstCardClick }) {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Failure Modes</h2>
         <p className="text-sm text-muted">
-          Five failure scenarios across all four failure categories. The integration is designed to fail loudly — never silently. Click any card to expand the full incident detail.
+          Five failure scenarios across all four failure categories. The integration is designed to fail loudly — never silently. <span className="text-primary font-medium">Click any card to expand the full incident detail.</span>
         </p>
       </div>
 

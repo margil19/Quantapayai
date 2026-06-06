@@ -58,7 +58,7 @@ export default function Part3BuildBuy({ onFirstCardClick }) {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Build / Buy / Partner</h2>
         <p className="text-sm text-muted mb-3">
-          Five HRIS integrations evaluated across revenue risk, API quality, and competitive exposure. Click any row to see the full reasoning behind the decision.
+          Five HRIS integrations evaluated across revenue risk, API quality, and competitive exposure. <span className="text-primary font-medium">Click any row to see the full reasoning behind the decision.</span>
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>

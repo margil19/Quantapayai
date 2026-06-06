@@ -161,7 +161,7 @@ export default function TrustGradient({ onFirstCardClick }) {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Trust Gradient</h2>
         <p className="text-sm text-muted mb-3">
-          Every write action is classified by reversibility, payroll consequence, and regulatory exposure — then routed to one of three tiers. Click any action card to see the full reasoning.
+          Every write action is classified by reversibility, payroll consequence, and regulatory exposure — then routed to one of three tiers. <span className="text-primary font-medium">Click any action card to see the full reasoning.</span>
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>

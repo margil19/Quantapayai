@@ -14,9 +14,9 @@ import Part4FieldMapping from './components/Part4FieldMapping'
 import BonusDashboard from './components/BonusDashboard'
 
 // ─── localStorage keys ────────────────────────────────────────────────────────
-const LS_WELCOMED        = 'qpai_welcomed'
-const LS_TOUR_DISMISSED  = 'qpai_tour_dismissed'
-const LS_TOUR_VISITED    = 'qpai_tour_visited'   // JSON array of visited part ids
+const LS_WELCOMED       = 'qpai_welcomed'
+const LS_TOUR_DISMISSED = 'qpai_tour_dismissed'
+const LS_TOUR_VISITED   = 'qpai_tour_visited'
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
 const PARTS = [
@@ -59,8 +59,7 @@ const PART4_SECTIONS = [
   { id: 'fieldmapping', label: 'Field Mapping Configuration' },
 ]
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
+// ─── SectionProgress ─────────────────────────────────────────────────────────
 function SectionProgress({ sections, activeId }) {
   const idx = sections.findIndex((s) => s.id === activeId)
   if (idx === -1) return null
@@ -71,14 +70,74 @@ function SectionProgress({ sections, activeId }) {
   )
 }
 
-// CHANGE 1 — Welcome modal
+// ─── Change 2: SideNav ───────────────────────────────────────────────────────
+// Sticky left panel. Full labels on md+, thin progress rail on small screens.
+function SideNav({ sections, activeId, onSelect }) {
+  const activeIdx = sections.findIndex((s) => s.id === activeId)
+
+  return (
+    <>
+      {/* md+ — labelled sidebar */}
+      <div className="hidden md:block w-36 shrink-0 self-start sticky top-[57px]">
+        <div className="space-y-0.5">
+          {sections.map((s) => {
+            const isActive = s.id === activeId
+            return (
+              <button
+                key={s.id}
+                onClick={() => { onSelect(s.id); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                className={`block w-full text-left text-xs px-3 py-2 rounded-lg transition-colors border-l-2 ${
+                  isActive
+                    ? 'text-primary font-semibold bg-purple-50 border-primary'
+                    : 'text-muted hover:text-dark hover:bg-gray-50 border-transparent'
+                }`}
+              >
+                {s.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* sm — thin progress rail */}
+      <div className="md:hidden w-1.5 shrink-0 self-stretch mt-1">
+        <div className="relative h-full rounded-full bg-gray-100 overflow-hidden">
+          <div
+            className="absolute w-full rounded-full bg-primary transition-all duration-300"
+            style={{
+              top: `${(activeIdx / sections.length) * 100}%`,
+              height: `${(1 / sections.length) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ─── Change 3: NextNudge ─────────────────────────────────────────────────────
+// Right-aligned conversational nudge at the bottom of every section.
+function NextNudge({ text, dest, onClick }) {
+  return (
+    <div className="mt-14 pt-6 border-t border-gray-100 flex justify-end">
+      <button
+        onClick={onClick}
+        className="group flex items-center gap-1.5 text-xs text-muted hover:text-dark transition-colors"
+      >
+        <span>{text}</span>
+        <span className="text-primary font-semibold group-hover:translate-x-0.5 transition-transform inline-block">
+          → {dest}
+        </span>
+      </button>
+    </div>
+  )
+}
+
+// ─── Welcome modal ────────────────────────────────────────────────────────────
 function WelcomeModal({ onDismiss }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* overlay */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-      {/* card */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[480px] p-8">
         <p className="text-2xl mb-4">👋</p>
         <h2 className="text-xl font-bold text-dark mb-2">
@@ -87,15 +146,13 @@ function WelcomeModal({ onDismiss }) {
         <p className="text-sm text-muted leading-relaxed mb-5">
           This is a PM take-home case study built as an interactive product — not a PDF.
         </p>
-
         <p className="text-xs font-semibold text-dark uppercase tracking-wide mb-3">
           Here's how to navigate it:
         </p>
-
         <ol className="space-y-2.5 mb-6">
           {[
             ['Part 1 — Data Flow', 'Click the trigger buttons to watch the integration run live'],
-            ['Part 2 — AI in the Integration Layer', 'See where AI helps and where it shouldn\'t'],
+            ['Part 2 — AI in the Integration Layer', "See where AI helps and where it shouldn't"],
             ['Part 3 — Prioritization', 'Click each HRIS card to see the build / buy / partner decision'],
             ['Part 4 — Error UX', 'Interact with the wireframes like a real product'],
             ['Bonus — Health Dashboard', 'The dashboard no one asked for but every ops team needs'],
@@ -110,12 +167,10 @@ function WelcomeModal({ onDismiss }) {
             </li>
           ))}
         </ol>
-
         <p className="text-xs text-muted mb-6 flex items-start gap-2 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
           <span className="shrink-0">ⓘ</span>
           <span>Look for the ⓘ icon throughout — it shows the PM thinking behind every design decision.</span>
         </p>
-
         <button
           onClick={onDismiss}
           className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors"
@@ -130,7 +185,7 @@ function WelcomeModal({ onDismiss }) {
   )
 }
 
-// CHANGE 3 — Tour progress bar
+// ─── Tour bar ─────────────────────────────────────────────────────────────────
 function TourBar({ visited, onNavigate, onDismiss }) {
   return (
     <div className="bg-white border-b border-gray-100 px-4 py-2">
@@ -143,9 +198,7 @@ function TourBar({ visited, onNavigate, onDismiss }) {
               key={step.partId}
               onClick={() => onNavigate(step.partId)}
               className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors ${
-                done
-                  ? 'text-primary font-semibold bg-purple-50'
-                  : 'text-muted hover:text-dark'
+                done ? 'text-primary font-semibold bg-purple-50' : 'text-muted hover:text-dark'
               }`}
             >
               <span className={done ? 'text-primary' : 'text-gray-300'}>{CIRCLE[i]}</span>
@@ -167,22 +220,16 @@ function TourBar({ visited, onNavigate, onDismiss }) {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activePart, setActivePart] = useState('part1')
-  const [p1Section, setP1Section] = useState('dataflow')
-  const [p2Section, setP2Section] = useState('fieldmapping')
-  const [p3Section, setP3Section] = useState('buildbuy')
-  const [p4Section, setP4Section] = useState('syncfailure')
+  const [activePart, setActivePart]   = useState('part1')
+  const [p1Section,  setP1Section]    = useState('dataflow')
+  const [p2Section,  setP2Section]    = useState('fieldmapping')
+  const [p3Section,  setP3Section]    = useState('buildbuy')
+  const [p4Section,  setP4Section]    = useState('syncfailure')
 
-  // CHANGE 1 — welcome modal
-  const [showWelcome, setShowWelcome] = useState(
-    () => !localStorage.getItem(LS_WELCOMED)
-  )
-
-  // CHANGE 2 — ⓘ pulse (active for 30s after welcome dismissed)
-  const [infoPulse, setInfoPulse] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(LS_WELCOMED))
+  const [infoPulse,   setInfoPulse]   = useState(false)
   const pulseTimerRef = useRef(null)
 
-  // CHANGE 3 — tour bar
   const [tourDismissed, setTourDismissed] = useState(
     () => !!localStorage.getItem(LS_TOUR_DISMISSED)
   )
@@ -191,25 +238,21 @@ export default function App() {
     catch { return [] }
   })
 
-  // Mark current part as visited whenever activePart changes
   useEffect(() => {
     if (!tourVisited.includes(activePart)) {
       const next = [...tourVisited, activePart]
       setTourVisited(next)
       localStorage.setItem(LS_TOUR_VISITED, JSON.stringify(next))
     }
-  }, [activePart]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activePart]) // eslint-disable-line
 
-  // Auto-dismiss tour bar once all 5 parts visited
   useEffect(() => {
     if (!tourDismissed && tourVisited.length >= PARTS.length) {
-      // small delay so the last checkmark is visible briefly
       const t = setTimeout(() => handleTourDismiss(), 1500)
       return () => clearTimeout(t)
     }
-  }, [tourVisited, tourDismissed]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tourVisited, tourDismissed]) // eslint-disable-line
 
-  // Activate pulse after welcome dismissed; cancel after 30s
   const handleWelcomeDismiss = () => {
     localStorage.setItem(LS_WELCOMED, '1')
     setShowWelcome(false)
@@ -222,25 +265,37 @@ export default function App() {
     setTourDismissed(true)
   }
 
-  const handlePartSwitch = (partId) => {
-    setActivePart(partId)
-  }
+  const handlePartSwitch = (partId) => setActivePart(partId)
 
   const showTourBar = !tourDismissed && !showWelcome
+
+  // Shared sub-tab renderer (keeps sub-tab bar at top unchanged)
+  const SubTabs = ({ sections, activeId, onSelect }) => (
+    <div className="flex items-center gap-1 border-b border-gray-100">
+      {sections.map((s) => (
+        <button
+          key={s.id}
+          onClick={() => onSelect(s.id)}
+          className={`relative text-sm px-4 py-3 font-medium transition-colors ${
+            activeId === s.id ? 'text-dark' : 'text-muted hover:text-dark'
+          }`}
+        >
+          {s.label}
+          {activeId === s.id && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+          )}
+        </button>
+      ))}
+    </div>
+  )
 
   return (
     <div className={`min-h-screen bg-white${infoPulse ? ' info-pulse-active' : ''}`}>
 
-      {/* CHANGE 1 — Welcome modal */}
       {showWelcome && <WelcomeModal onDismiss={handleWelcomeDismiss} />}
 
-      {/* CHANGE 3 — Tour bar (sits above sticky nav) */}
       {showTourBar && (
-        <TourBar
-          visited={tourVisited}
-          onNavigate={handlePartSwitch}
-          onDismiss={handleTourDismiss}
-        />
+        <TourBar visited={tourVisited} onNavigate={handlePartSwitch} onDismiss={handleTourDismiss} />
       )}
 
       {/* Top nav */}
@@ -294,27 +349,42 @@ export default function App() {
               How QuantapayAI connects to Workday HCM — covering trigger architecture, data normalization, trust-tier routing, and failure handling across a live payroll integration.
             </p>
           </div>
-          <div className="flex items-center gap-1 border-b border-gray-100">
-            {PART1_SECTIONS.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setP1Section(s.id)}
-                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-                  p1Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-                }`}
-              >
-                {s.label}
-                {p1Section === s.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            ))}
-          </div>
+          <SubTabs sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
           <SectionProgress sections={PART1_SECTIONS} activeId={p1Section} />
-          <div>
-            {p1Section === 'dataflow' && <DataFlow />}
-            {p1Section === 'trust' && <TrustGradient />}
-            {p1Section === 'failures' && <FailureModes />}
+          <div className="flex gap-8">
+            <SideNav sections={PART1_SECTIONS} activeId={p1Section} onSelect={setP1Section} />
+            <div className="flex-1 min-w-0">
+              {p1Section === 'dataflow' && (
+                <>
+                  <DataFlow />
+                  <NextNudge
+                    text="Next: see how each change gets routed"
+                    dest="Trust Gradient"
+                    onClick={() => { setP1Section('trust'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p1Section === 'trust' && (
+                <>
+                  <TrustGradient />
+                  <NextNudge
+                    text="Next: what happens when things go wrong"
+                    dest="Failure Modes"
+                    onClick={() => { setP1Section('failures'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p1Section === 'failures' && (
+                <>
+                  <FailureModes />
+                  <NextNudge
+                    text="You've seen how the integration works. Next: where AI fits in"
+                    dest="Part 2"
+                    onClick={() => { handlePartSwitch('part2'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -331,28 +401,52 @@ export default function App() {
               Where AI earns its place in this integration — and where it doesn't. AI reduces manual effort on low-stakes, high-volume tasks. It never touches the logic that determines compliance.
             </p>
           </div>
-          <div className="flex items-center gap-1 border-b border-gray-100">
-            {PART2_SECTIONS.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setP2Section(s.id)}
-                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-                  p2Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-                }`}
-              >
-                {s.label}
-                {p2Section === s.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            ))}
-          </div>
+          <SubTabs sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
           <SectionProgress sections={PART2_SECTIONS} activeId={p2Section} />
-          <div>
-            {p2Section === 'fieldmapping' && <Part2FieldMapping />}
-            {p2Section === 'anomaly' && <Part2AnomalyDetection />}
-            {p2Section === 'notai' && <Part2TrustWarning />}
-            {p2Section === 'aitoolspm' && <Part2AIToolsAsPM />}
+          <div className="flex gap-8">
+            <SideNav sections={PART2_SECTIONS} activeId={p2Section} onSelect={setP2Section} />
+            <div className="flex-1 min-w-0">
+              {p2Section === 'fieldmapping' && (
+                <>
+                  <Part2FieldMapping />
+                  <NextNudge
+                    text="Next: see what happens when the data looks wrong"
+                    dest="Anomaly Detection"
+                    onClick={() => { setP2Section('anomaly'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p2Section === 'anomaly' && (
+                <>
+                  <Part2AnomalyDetection />
+                  <NextNudge
+                    text="Next: where AI should stay out of it entirely"
+                    dest="Where AI Should Not Be Used"
+                    onClick={() => { setP2Section('notai'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p2Section === 'notai' && (
+                <>
+                  <Part2TrustWarning />
+                  <NextNudge
+                    text="Next: how this PM used AI while building it"
+                    dest="AI Tools as PM"
+                    onClick={() => { setP2Section('aitoolspm'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p2Section === 'aitoolspm' && (
+                <>
+                  <Part2AIToolsAsPM />
+                  <NextNudge
+                    text="Next: which integrations to build first"
+                    dest="Part 3"
+                    onClick={() => { handlePartSwitch('part3'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -369,27 +463,42 @@ export default function App() {
               Which integrations to build, which to partner, and in what order — based on revenue already at risk, not predicted impact.
             </p>
           </div>
-          <div className="flex items-center gap-1 border-b border-gray-100">
-            {PART3_SECTIONS.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setP3Section(s.id)}
-                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-                  p3Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-                }`}
-              >
-                {s.label}
-                {p3Section === s.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            ))}
-          </div>
+          <SubTabs sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
           <SectionProgress sections={PART3_SECTIONS} activeId={p3Section} />
-          <div>
-            {p3Section === 'buildbuy' && <Part3BuildBuy />}
-            {p3Section === 'sequencing' && <Part3Sequencing />}
-            {p3Section === 'datagaps' && <Part3DataGaps />}
+          <div className="flex gap-8">
+            <SideNav sections={PART3_SECTIONS} activeId={p3Section} onSelect={setP3Section} />
+            <div className="flex-1 min-w-0">
+              {p3Section === 'buildbuy' && (
+                <>
+                  <Part3BuildBuy />
+                  <NextNudge
+                    text="Next: see them ordered by priority"
+                    dest="Sequencing"
+                    onClick={() => { setP3Section('sequencing'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p3Section === 'sequencing' && (
+                <>
+                  <Part3Sequencing />
+                  <NextNudge
+                    text="Next: what data could change this order"
+                    dest="What Would Change This"
+                    onClick={() => { setP3Section('datagaps'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p3Section === 'datagaps' && (
+                <>
+                  <Part3DataGaps />
+                  <NextNudge
+                    text="Next: what the admin actually sees"
+                    dest="Part 4"
+                    onClick={() => { handlePartSwitch('part4'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -406,26 +515,32 @@ export default function App() {
               Two interactive product screens — how QuantapayAI surfaces a sync failure to an HR admin, and how field mapping is configured during onboarding. Both are clickable, not static.
             </p>
           </div>
-          <div className="flex items-center gap-1 border-b border-gray-100">
-            {PART4_SECTIONS.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setP4Section(s.id)}
-                className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-                  p4Section === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-                }`}
-              >
-                {s.label}
-                {p4Section === s.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            ))}
-          </div>
+          <SubTabs sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
           <SectionProgress sections={PART4_SECTIONS} activeId={p4Section} />
-          <div>
-            {p4Section === 'syncfailure' && <Part4SyncFailure />}
-            {p4Section === 'fieldmapping' && <Part4FieldMapping />}
+          <div className="flex gap-8">
+            <SideNav sections={PART4_SECTIONS} activeId={p4Section} onSelect={setP4Section} />
+            <div className="flex-1 min-w-0">
+              {p4Section === 'syncfailure' && (
+                <>
+                  <Part4SyncFailure />
+                  <NextNudge
+                    text="Next: how the admin sets up field mapping"
+                    dest="Field Mapping Configuration"
+                    onClick={() => { setP4Section('fieldmapping'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+              {p4Section === 'fieldmapping' && (
+                <>
+                  <Part4FieldMapping />
+                  <NextNudge
+                    text="You've covered all 4 parts. One more thing we built"
+                    dest="Bonus"
+                    onClick={() => { handlePartSwitch('bonus'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

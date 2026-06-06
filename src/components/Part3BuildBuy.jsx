@@ -46,7 +46,7 @@ const ROWS = [
     decision: 'BUY',
     apiQuality: 'Unknown — proprietary, no standard API',
     competitiveRisk: 'None',
-    rationale: "Before writing a single line of code, check whether an off-the-shelf connector already exists for this system. If one does, buy it — a $900K deal doesn't justify building and maintaining a custom integration from scratch for one customer. If no connector exists, treat this as a scoped commercial engagement with a clear price and end date, not an open-ended product feature.",
+    rationale: "First check if an existing connector can be bought or licensed from a systems integrator who has already worked with this company's proprietary system. If one exists, buy it — fast path to closing $900K. If nothing exists, do not build. A one-customer custom integration has zero reusability and becomes permanent maintenance debt. Walk away or renegotiate the deal terms.",
   },
 ]
 

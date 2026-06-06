@@ -4,7 +4,7 @@ const ITEMS = [
     name: 'Workday',
     decision: 'Build',
     decisionColor: 'bg-emerald-500 text-white',
-    timeline: 'Now — Q1 priority',
+    timeline: '',
     why: '$1.4M in deals are actively blocked right now. Every week of delay has a direct, measurable cost.',
     revenueAtRisk: '$1.4M',
     revenueLabel: 'revenue blocked',
@@ -16,7 +16,7 @@ const ITEMS = [
     name: 'BambooHR',
     decision: 'Partner',
     decisionColor: 'bg-teal-500 text-white',
-    timeline: 'Q1 — run parallel to Workday',
+    timeline: 'run parallel to Workday',
     why: '14 CS tickets is the loudest existing-customer signal. A partner connector ships in weeks, not quarters — run this alongside Workday at low eng cost.',
     revenueAtRisk: null,
     revenueLabel: 'CS noise + churn risk',
@@ -28,7 +28,7 @@ const ITEMS = [
     name: 'HiBob',
     decision: 'Partner',
     decisionColor: 'bg-teal-500 text-white',
-    timeline: 'Q2',
+    timeline: '',
     why: 'Two strategic accounts. A partner connector takes 3 weeks to stand up. Don\'t lose reference accounts for something this fast to ship.',
     revenueAtRisk: null,
     revenueLabel: 'strategic account retention',
@@ -40,7 +40,7 @@ const ITEMS = [
     name: 'Custom Proprietary HRIS',
     decision: 'Buy',
     decisionColor: 'bg-amber-400 text-dark',
-    timeline: 'Q2 · commercial conversation first',
+    timeline: 'commercial conversation first',
     why: "Next action is immediate — check whether an off-the-shelf connector already exists. That answer comes back in days, not weeks. Don't let a $900K deal sit unaddressed while the answer is a quick lookup.",
     revenueAtRisk: '$900K',
     revenueLabel: 'deal structure matters',
@@ -52,7 +52,7 @@ const ITEMS = [
     name: 'Rippling',
     decision: 'Partner — cautious',
     decisionColor: 'bg-amber-500 text-white',
-    timeline: 'Q2–Q3 · after segment validation',
+    timeline: 'after segment validation',
     why: "Next action is waiting — waiting for prospects to move. Nothing to build or buy until at least 2 of the 3 prospects convert. Rippling competes in payroll and can restrict the integration at will.",
     revenueAtRisk: null,
     revenueLabel: '3 prospects, unproven',
@@ -106,7 +106,7 @@ export default function Part3Sequencing() {
                         {item.revenueAtRisk ? `${item.revenueAtRisk} — ` : ''}{item.revenueLabel}
                       </span>
                     </div>
-                    <p className="text-xs text-muted mb-2">{item.timeline}</p>
+                    {item.timeline && <p className="text-xs text-muted mb-2">{item.timeline}</p>}
                     <p className={`text-xs leading-relaxed ${item.urgency === 'critical' ? 'text-gray-700' : 'text-gray-500'}`}>{item.why}</p>
                   </div>
                 </div>

@@ -44,7 +44,8 @@ const INITIAL_ROWS = [
     warningDetail: 'Workday sends this field as formatted text (e.g. "$92,000.00 USD"). QuantapayAI expects a plain number. We\'ll convert it automatically — confirm in preview that the conversion looks right.',
     workdaySent: '"$92,000.00 USD"',
     quantapayWillStore: '92000.00  (currency: USD)',
-    options: ["Employee's annual salary", 'Hourly rate', 'Bonus amount'],
+    correctOption: "Employee's annual salary",
+    options: ["Employee's annual salary", 'Total compensation package', 'Bonus target amount', 'Hourly billing rate'],
   },
   {
     id: 'worker_type',
@@ -55,7 +56,8 @@ const INITIAL_ROWS = [
     status: 'amber',
     locked: false,
     blockingGoLive: false,
-    options: ['Employment type', 'Worker classification', 'Contract type'],
+    correctOption: 'Employment type',
+    options: ['Employment type', 'Contractor category', 'Worker subtype — contingent', 'Engagement classification'],
   },
   {
     id: 'reg_class',
@@ -66,7 +68,8 @@ const INITIAL_ROWS = [
     status: 'red',
     locked: false,
     blockingGoLive: false,
-    options: ['Regulatory role', 'Compliance category', 'Job classification'],
+    correctOption: 'Regulatory role',
+    options: ['Regulatory role', 'Job grade level', 'Compliance tier', 'Risk classification — internal', 'Department sub-code'],
   },
   {
     id: 'schedule',
@@ -78,7 +81,8 @@ const INITIAL_ROWS = [
     locked: false,
     blockingGoLive: true,
     blockedReason: 'Required for payroll — no matching Workday field found. Select a mapping below to unblock.',
-    options: ['Work schedule', 'Shift type', 'Hours per week'],
+    correctOption: 'Work schedule',
+    options: ['Work schedule', 'Shift pattern', 'Hours classification', 'Attendance type'],
   },
   {
     id: 'pay_group',
@@ -89,7 +93,8 @@ const INITIAL_ROWS = [
     status: 'red',
     locked: false,
     blockingGoLive: false,
-    options: ['Pay group', 'Payroll schedule', 'Payment frequency'],
+    correctOption: 'Pay group',
+    options: ['Pay group', 'Payroll batch code', 'Payment run identifier', 'Cost center group'],
   },
   {
     id: 'national_id',
@@ -137,6 +142,9 @@ function FieldRow({ row, onConfirm }) {
   const [selected, setSelected] = useState('')
   const s = statusStyle(row.status)
   const isClickable = ['warning', 'amber', 'red', 'blocked'].includes(row.status)
+
+  const isCorrectSelection = selected !== '' && row.correctOption && selected === row.correctOption
+  const isWrongSelection   = selected !== '' && row.correctOption && selected !== row.correctOption
 
   const handleConfirm = () => {
     if (!selected) return
@@ -204,23 +212,35 @@ function FieldRow({ row, onConfirm }) {
                     <p className="text-sm font-mono text-dark">{row.quantapayWillStore}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-xs text-gray-600 shrink-0">Confirm mapping:</p>
-                  <select
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-dark bg-white"
-                    value={selected}
-                    onChange={e => setSelected(e.target.value)}
-                  >
-                    <option value="">— choose mapping —</option>
-                    {row.options.map(o => <option key={o}>{o}</option>)}
-                  </select>
-                  <button
-                    onClick={handleConfirm}
-                    disabled={!selected}
-                    className="text-xs bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors disabled:opacity-40"
-                  >
-                    Confirm
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-xs text-gray-600 shrink-0">Confirm mapping:</p>
+                    <select
+                      className={`text-xs border rounded-lg px-2 py-1.5 text-dark bg-white ${isCorrectSelection ? 'border-emerald-400' : isWrongSelection ? 'border-amber-400' : 'border-gray-200'}`}
+                      value={selected}
+                      onChange={e => setSelected(e.target.value)}
+                    >
+                      <option value="">— choose mapping —</option>
+                      {row.options.map(o => <option key={o}>{o}</option>)}
+                    </select>
+                    <button
+                      onClick={handleConfirm}
+                      disabled={!selected}
+                      className="text-xs bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors disabled:opacity-40"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                  {isCorrectSelection && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                      ✓ Looks right — this maps correctly to the field QuantapayAI expects.
+                    </p>
+                  )}
+                  {isWrongSelection && (
+                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                      ⚠ This may not be the right match — check your Workday field definitions before confirming.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -230,25 +250,37 @@ function FieldRow({ row, onConfirm }) {
                 {row.status === 'blocked' && (
                   <p className="text-xs text-red-600 leading-relaxed">{row.blockedReason}</p>
                 )}
-                <div className="flex items-center gap-3">
-                  <p className="text-xs text-gray-600 shrink-0">
-                    {row.status === 'blocked' ? 'Select a mapping to unblock:' : 'Select the correct field in QuantapayAI:'}
-                  </p>
-                  <select
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-dark bg-white flex-1 max-w-xs"
-                    value={selected}
-                    onChange={e => setSelected(e.target.value)}
-                  >
-                    <option value="">— choose mapping —</option>
-                    {row.options.map(o => <option key={o}>{o}</option>)}
-                  </select>
-                  <button
-                    onClick={handleConfirm}
-                    disabled={!selected}
-                    className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40"
-                  >
-                    Confirm
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <p className="text-xs text-gray-600 shrink-0">
+                      {row.status === 'blocked' ? 'Select a mapping to unblock:' : 'Select the correct field in QuantapayAI:'}
+                    </p>
+                    <select
+                      className={`text-xs border rounded-lg px-2 py-1.5 text-dark bg-white flex-1 max-w-xs ${isCorrectSelection ? 'border-emerald-400' : isWrongSelection ? 'border-amber-400' : 'border-gray-200'}`}
+                      value={selected}
+                      onChange={e => setSelected(e.target.value)}
+                    >
+                      <option value="">— choose mapping —</option>
+                      {row.options.map(o => <option key={o}>{o}</option>)}
+                    </select>
+                    <button
+                      onClick={handleConfirm}
+                      disabled={!selected}
+                      className="text-xs bg-primary text-white rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                  {isCorrectSelection && (
+                    <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                      ✓ Looks right — this maps correctly to the field QuantapayAI expects.
+                    </p>
+                  )}
+                  {isWrongSelection && (
+                    <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                      ⚠ This may not be the right match — check your Workday field definitions before confirming.
+                    </p>
+                  )}
                 </div>
               </div>
             )}

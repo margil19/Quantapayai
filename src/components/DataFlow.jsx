@@ -87,9 +87,36 @@ function DesignChip() {
       </button>
       {open && (
         <span className="block text-xs text-muted bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-lg leading-relaxed">
-          Workday doesn't support instant push notifications (webhooks) — it doesn't have a built-in way to say "hey, something just changed." So QuantapayAI checks in on a regular schedule instead, which is the standard approach for Workday and works reliably across all customers with no extra setup.
+          There are three trigger paths for Workday. The table below shows all three — and why only one is a reliable baseline.
           <br /><br />
-          For other HR systems that <em>do</em> support instant notifications (like BambooHR or Rippling), QuantapayAI can switch to a webhook-based flow — meaning changes arrive in real time rather than on a polling schedule.
+          <table className="w-full text-xs border-collapse mt-1">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left pb-1.5 font-semibold text-gray-600 pr-4">Approach</th>
+                <th className="text-left pb-1.5 font-semibold text-gray-600 pr-4">How it works</th>
+                <th className="text-left pb-1.5 font-semibold text-gray-600">Decision</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600">
+              <tr className="border-b border-gray-100">
+                <td className="py-2 pr-4 font-medium text-dark align-top">RAAS Polling</td>
+                <td className="py-2 pr-4 align-top">QuantapayAI calls Workday's API on a schedule (every 15–30 min) and pulls all records changed since the last check.</td>
+                <td className="py-2 align-top"><span className="text-emerald-700 font-semibold">Selected — standard path.</span> Works on every Workday tenant with no customer configuration required.</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 pr-4 font-medium text-dark align-top">EIB File Drop</td>
+                <td className="py-2 pr-4 align-top">Customer configures Workday to export a file on a schedule. QuantapayAI ingests it.</td>
+                <td className="py-2 align-top"><span className="text-amber-600 font-semibold">Fallback only.</span> Adds customer setup burden, file latency, and parsing fragility.</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-medium text-dark align-top">Workday Studio Webhooks</td>
+                <td className="py-2 pr-4 align-top">Workday supports event-driven integrations via Studio — enabling near real-time push notifications when records change.</td>
+                <td className="py-2 align-top"><span className="text-blue-600 font-semibold">Enterprise enhancement only.</span> Requires a certified Workday developer on the customer's tenant. Not available universally — cannot be a reliable baseline.</td>
+              </tr>
+            </tbody>
+          </table>
+          <br />
+          For other HR systems that <em>do</em> support webhooks natively (like BambooHR or Rippling), QuantapayAI uses event-driven flow — changes arrive in real time with no polling required.
         </span>
       )}
     </span>

@@ -25,8 +25,8 @@ const GAPS = [
   },
   {
     dataPoint: 'Do any of the 3 Rippling prospects actually convert?',
-    why: "Rippling is at position 5 specifically because the next action is waiting, not doing. Nothing moves until prospects move. If none convert, Rippling drops off the list entirely.",
-    shift: 'If 2+ prospects convert, Rippling moves up and the partner connector conversation begins. If none convert in Q2, the position stays deprioritised indefinitely.',
+    why: "Do any of the 3 prospects have Rippling integration as a hard requirement to sign? And what is Rippling's current stance on third party payroll integrations — is there any formal API access policy or partnership program that would reduce the risk of building native?",
+    shift: "If prospects convert without needing a native build, Partner via Merge is confirmed as sufficient. If prospects require native and Rippling has a formal partner program with API stability guarantees, native build moves up the priority stack.",
     affects: 'Rippling decision',
   },
   {

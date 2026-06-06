@@ -38,7 +38,7 @@ const ROWS = [
     decision: 'PARTNER_CAUTION',
     apiQuality: 'Excellent API · real-time webhooks · modern stack',
     competitiveRisk: 'HIGH — Rippling competes directly in payroll',
-    rationale: "Rippling's API quality makes this technically easy. The competitive risk makes it strategically dangerous. Rippling can deprecate or restrict the integration at will — and has done so to other platforms before. A partner connector limits exposure. Do not invest eng in a native Rippling build until the segment is proven and the competitive relationship is clearer.",
+    rationale: "Rippling's API quality makes this technically easy. The strategic complexity comes from Rippling competing directly in payroll — they have a financial incentive to make it harder for customers to route payroll elsewhere. As a vertically integrated platform, they control the data source. A partner connector via Merge limits QuantapayAI's exposure — if Rippling restricts API access for any reason, Merge absorbs that problem, not QuantapayAI's engineering team. Do not invest in a native Rippling build until the segment is proven and the risk profile is clearer.",
   },
   {
     hris: 'Custom Proprietary HRIS',

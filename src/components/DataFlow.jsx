@@ -116,11 +116,12 @@ function DesignChip() {
   )
 }
 
-export default function DataFlow() {
+export default function DataFlow({ onFirstTrigger }) {
   const [active, setActive] = useState(null)
   const [animating, setAnimating] = useState(false)
   const [activeStage, setActiveStage] = useState(-1)
   const [tooltip, setTooltip] = useState(null)
+  const [triggerFiredOnce, setTriggerFiredOnce] = useState(false)
 
   // CHANGE 4 — trigger hint banner (first session only)
   const [showTriggerHint, setShowTriggerHint] = useState(
@@ -133,6 +134,10 @@ export default function DataFlow() {
 
   const trigger = (name) => {
     if (animating) return
+    if (!triggerFiredOnce && onFirstTrigger) {
+      onFirstTrigger()
+      setTriggerFiredOnce(true)
+    }
     setActive(name)
     setAnimating(true)
     setActiveStage(0)

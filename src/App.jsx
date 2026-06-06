@@ -59,6 +59,111 @@ const PART4_SECTIONS = [
   { id: 'fieldmapping', label: 'Field Mapping Configuration' },
 ]
 
+// ─── Guide message logic ──────────────────────────────────────────────────────
+function getGuideMessage({ showWelcome, activePart, p1Section, p2Section, p3Section, p4Section, tourVisited, triggerClicked }) {
+  const allVisited = PARTS.every((p) => tourVisited.includes(p.id))
+
+  if (showWelcome) {
+    return "Start by clicking 'Let's go →' to begin the tour"
+  }
+  if (allVisited) {
+    return "You've seen everything. Questions? The ⓘ icons throughout explain every PM decision."
+  }
+  if (activePart === 'part1') {
+    if (p1Section === 'dataflow') {
+      if (triggerClicked) return "See how each stage lights up? Now head to Trust Gradient to see how each change gets routed →"
+      return "Click New Hire, Salary Change, or Termination to watch the integration run"
+    }
+    if (p1Section === 'trust') {
+      return "Click any card to see why it was assigned that trust level"
+    }
+    if (p1Section === 'failures') {
+      return "You've seen how the integration works. Head to Part 2 to see where AI fits in →"
+    }
+  }
+  if (activePart === 'part2') {
+    if (p2Section === 'fieldmapping') return "Click the AI workflow cards to see the before and after"
+    if (p2Section === 'anomaly')      return "See how AI flags outliers — and why it can't make the final call"
+    if (p2Section === 'notai')        return "This is the key distinction — where rules beat AI every time"
+    if (p2Section === 'aitoolspm')    return "Part 3 is where prioritization gets interesting → which HRIS do we build first?"
+  }
+  if (activePart === 'part3') {
+    if (p3Section === 'buildbuy')   return "Click each HRIS card to see the build vs buy vs partner decision"
+    if (p3Section === 'sequencing') return "See them ordered by revenue at risk — not predicted impact"
+    if (p3Section === 'datagaps')   return "Now see what the admin actually sees when something breaks → Part 4"
+  }
+  if (activePart === 'part4') {
+    if (p4Section === 'syncfailure')  return "Try the sync failure card first — click 'Review and Fix' to see the full flow"
+    if (p4Section === 'fieldmapping') return "You've covered all 4 parts. We built one more thing nobody asked for → check the Bonus tab"
+  }
+  if (activePart === 'bonus') {
+    return "This is the health dashboard — the screen that tells you what's breaking before your customer does"
+  }
+  return "Explore the sections above to walk through the full integration story"
+}
+
+// ─── Guide bubble ─────────────────────────────────────────────────────────────
+function GuideBubble({ message, minimized, onMinimize, onExpand }) {
+  const [displayed, setDisplayed]   = useState(message)
+  const [visible,   setVisible]     = useState(true)   // for fade transition
+  const prevMessageRef              = useRef(message)
+
+  useEffect(() => {
+    if (message === prevMessageRef.current) return
+    // Fade out → swap text → fade in
+    setVisible(false)
+    const t = setTimeout(() => {
+      setDisplayed(message)
+      prevMessageRef.current = message
+      setVisible(true)
+    }, 180)
+    return () => clearTimeout(t)
+  }, [message])
+
+  // Minimized — small purple dot, expands on hover
+  if (minimized) {
+    return (
+      <button
+        onClick={onExpand}
+        title="Show guide"
+        className="fixed bottom-6 right-6 z-40 group"
+      >
+        <div
+          className="w-4 h-4 rounded-full shadow-lg transition-transform duration-200 group-hover:scale-[2.5]"
+          style={{ background: '#714dff' }}
+        />
+      </button>
+    )
+  }
+
+  return (
+    <div
+      className="fixed bottom-6 right-6 z-40 w-[280px] rounded-2xl shadow-2xl overflow-hidden"
+      style={{ background: '#714dff' }}
+    >
+      <div className="px-4 py-3 flex items-start gap-3">
+        {/* message */}
+        <p
+          className="text-xs text-white leading-relaxed flex-1 transition-opacity duration-200"
+          style={{ opacity: visible ? 1 : 0 }}
+        >
+          {displayed}
+        </p>
+        {/* minimise */}
+        <button
+          onClick={onMinimize}
+          className="shrink-0 text-white/50 hover:text-white transition-colors text-[10px] mt-0.5 leading-none"
+          aria-label="Minimise guide"
+        >
+          ✕
+        </button>
+      </div>
+      {/* subtle bottom accent stripe */}
+      <div className="h-0.5 w-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
+    </div>
+  )
+}
+
 // ─── SectionProgress ─────────────────────────────────────────────────────────
 function SectionProgress({ sections, activeId }) {
   const idx = sections.findIndex((s) => s.id === activeId)
@@ -70,11 +175,9 @@ function SectionProgress({ sections, activeId }) {
   )
 }
 
-// ─── Change 2: SideNav ───────────────────────────────────────────────────────
-// Sticky left panel. Full labels on md+, thin progress rail on small screens.
+// ─── SideNav ─────────────────────────────────────────────────────────────────
 function SideNav({ sections, activeId, onSelect }) {
   const activeIdx = sections.findIndex((s) => s.id === activeId)
-
   return (
     <>
       {/* md+ — labelled sidebar */}
@@ -98,7 +201,6 @@ function SideNav({ sections, activeId, onSelect }) {
           })}
         </div>
       </div>
-
       {/* sm — thin progress rail */}
       <div className="md:hidden w-1.5 shrink-0 self-stretch mt-1">
         <div className="relative h-full rounded-full bg-gray-100 overflow-hidden">
@@ -115,8 +217,7 @@ function SideNav({ sections, activeId, onSelect }) {
   )
 }
 
-// ─── Change 3: NextNudge ─────────────────────────────────────────────────────
-// Right-aligned conversational nudge at the bottom of every section.
+// ─── NextNudge ────────────────────────────────────────────────────────────────
 function NextNudge({ text, dest, onClick }) {
   return (
     <div className="mt-14 pt-6 border-t border-gray-100 flex justify-end">
@@ -218,26 +319,53 @@ function TourBar({ visited, onNavigate, onDismiss }) {
   )
 }
 
+// ─── SubTabs (shared renderer) ────────────────────────────────────────────────
+function SubTabs({ sections, activeId, onSelect }) {
+  return (
+    <div className="flex items-center gap-1 border-b border-gray-100">
+      {sections.map((s) => (
+        <button
+          key={s.id}
+          onClick={() => onSelect(s.id)}
+          className={`relative text-sm px-4 py-3 font-medium transition-colors ${
+            activeId === s.id ? 'text-dark' : 'text-muted hover:text-dark'
+          }`}
+        >
+          {s.label}
+          {activeId === s.id && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activePart, setActivePart]   = useState('part1')
-  const [p1Section,  setP1Section]    = useState('dataflow')
-  const [p2Section,  setP2Section]    = useState('fieldmapping')
-  const [p3Section,  setP3Section]    = useState('buildbuy')
-  const [p4Section,  setP4Section]    = useState('syncfailure')
+  const [activePart,  setActivePart]  = useState('part1')
+  const [p1Section,   setP1Section]   = useState('dataflow')
+  const [p2Section,   setP2Section]   = useState('fieldmapping')
+  const [p3Section,   setP3Section]   = useState('buildbuy')
+  const [p4Section,   setP4Section]   = useState('syncfailure')
 
-  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(LS_WELCOMED))
-  const [infoPulse,   setInfoPulse]   = useState(false)
+  // Onboarding
+  const [showWelcome,   setShowWelcome]   = useState(() => !localStorage.getItem(LS_WELCOMED))
+  const [infoPulse,     setInfoPulse]     = useState(false)
   const pulseTimerRef = useRef(null)
 
-  const [tourDismissed, setTourDismissed] = useState(
-    () => !!localStorage.getItem(LS_TOUR_DISMISSED)
-  )
-  const [tourVisited, setTourVisited] = useState(() => {
+  // Tour bar
+  const [tourDismissed, setTourDismissed] = useState(() => !!localStorage.getItem(LS_TOUR_DISMISSED))
+  const [tourVisited,   setTourVisited]   = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS_TOUR_VISITED) || '[]') }
     catch { return [] }
   })
 
+  // Guide bubble
+  const [guideMinimized,  setGuideMinimized]  = useState(false)  // session only
+  const [triggerClicked,  setTriggerClicked]  = useState(false)  // first pipeline trigger
+
+  // Mark current part visited
   useEffect(() => {
     if (!tourVisited.includes(activePart)) {
       const next = [...tourVisited, activePart]
@@ -246,6 +374,7 @@ export default function App() {
     }
   }, [activePart]) // eslint-disable-line
 
+  // Auto-dismiss tour bar when all parts visited
   useEffect(() => {
     if (!tourDismissed && tourVisited.length >= PARTS.length) {
       const t = setTimeout(() => handleTourDismiss(), 1500)
@@ -269,25 +398,17 @@ export default function App() {
 
   const showTourBar = !tourDismissed && !showWelcome
 
-  // Shared sub-tab renderer (keeps sub-tab bar at top unchanged)
-  const SubTabs = ({ sections, activeId, onSelect }) => (
-    <div className="flex items-center gap-1 border-b border-gray-100">
-      {sections.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => onSelect(s.id)}
-          className={`relative text-sm px-4 py-3 font-medium transition-colors ${
-            activeId === s.id ? 'text-dark' : 'text-muted hover:text-dark'
-          }`}
-        >
-          {s.label}
-          {activeId === s.id && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-          )}
-        </button>
-      ))}
-    </div>
-  )
+  // Derive guide message from current state
+  const guideMessage = getGuideMessage({
+    showWelcome,
+    activePart,
+    p1Section,
+    p2Section,
+    p3Section,
+    p4Section,
+    tourVisited,
+    triggerClicked,
+  })
 
   return (
     <div className={`min-h-screen bg-white${infoPulse ? ' info-pulse-active' : ''}`}>
@@ -356,7 +477,7 @@ export default function App() {
             <div className="flex-1 min-w-0">
               {p1Section === 'dataflow' && (
                 <>
-                  <DataFlow />
+                  <DataFlow onFirstTrigger={() => setTriggerClicked(true)} />
                   <NextNudge
                     text="Next: see how each change gets routed"
                     dest="Trust Gradient"
@@ -562,6 +683,14 @@ export default function App() {
           <BonusDashboard />
         </div>
       )}
+
+      {/* ── Floating guide bubble ── */}
+      <GuideBubble
+        message={guideMessage}
+        minimized={guideMinimized}
+        onMinimize={() => setGuideMinimized(true)}
+        onExpand={() => setGuideMinimized(false)}
+      />
     </div>
   )
 }

@@ -90,11 +90,11 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
 
   const handleOverride = (fieldName, value) => {
     setOverrides(prev => ({ ...prev, [fieldName]: value }))
+    setConfirmedFlash(false)
   }
 
   const handleConfirmMapping = () => {
     setConfirmedFlash(true)
-    setTimeout(() => setConfirmedFlash(false), 2000)
   }
 
   return (

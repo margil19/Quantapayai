@@ -165,11 +165,12 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
             <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">15–20 min</span>
           </div>
           <div className="p-4">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-3 px-1">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-1 px-1">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"/> Auto-confirmed (&gt;90%)</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block"/> Needs review (60–90%)</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"/> Flag (&lt;60%)</span>
             </div>
+            <p className="text-[11px] text-gray-400 italic px-1 mb-3">Click any mapped field to override it</p>
             <div className="space-y-1.5">
               {FIELDS.map((f) => {
                 const badge = confidenceBadge(f.confidence, f.status)
@@ -205,10 +206,12 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
                         <span className="flex-1 font-mono text-primary text-xs">{overrides[f.workday]}</span>
                       ) : (
                         <span
-                          className="flex-1 font-mono text-gray-600 text-xs cursor-pointer hover:text-primary hover:underline"
+                          className="flex-1 font-mono text-gray-600 text-xs cursor-pointer hover:text-primary group flex items-center gap-1"
                           onClick={() => handleOverride(f.workday, f.quantapay + ' (edited)')}
-                          title="Click to override"
-                        >{f.quantapay}</span>
+                        >
+                          {f.quantapay}
+                          <span className="text-gray-300 group-hover:text-primary transition-colors text-[10px]">✎</span>
+                        </span>
                       )}
                       <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 ${badge.bg}`}>{badge.label}</span>
                     </div>

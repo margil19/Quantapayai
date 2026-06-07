@@ -120,6 +120,7 @@ export default function DataFlow({ onFirstTrigger }) {
   const [active, setActive] = useState(null)
   const [animating, setAnimating] = useState(false)
   const [activeStage, setActiveStage] = useState(-1)
+  const [hoveredStage, setHoveredStage] = useState(null)
   const [triggerFiredOnce, setTriggerFiredOnce] = useState(false)
 
   // CHANGE 4 — trigger hint banner (first session only)
@@ -223,15 +224,15 @@ export default function DataFlow({ onFirstTrigger }) {
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
 
-                {/* Stage box — fixed height, icon + label only, never resizes */}
+                {/* Stage box — fixed base height, expands on hover to show description */}
                 <div
                   key={`${stage.id}-${active ?? 'none'}`}
-                  className={`flex-1 min-w-0 h-20 rounded-xl border-2 select-none transition-colors duration-300 flex flex-col items-center justify-center gap-1 ${
+                  className={`flex-1 min-w-0 rounded-xl border-2 select-none transition-colors duration-300 overflow-hidden ${
                     isActive
                       ? 'border-primary bg-purple-50'
                       : isPast
                       ? 'border-primary bg-purple-50/40'
-                      : 'border-gray-200 bg-white'
+                      : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
                   style={
                     isActive
@@ -240,13 +241,24 @@ export default function DataFlow({ onFirstTrigger }) {
                       ? { boxShadow: '0 0 6px 2px rgba(113,77,255,0.07)' }
                       : {}
                   }
+                  onMouseEnter={() => setHoveredStage(i)}
+                  onMouseLeave={() => setHoveredStage(null)}
                 >
-                  <span className={`text-lg leading-none transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
-                    {stage.icon}
-                  </span>
-                  <span className={`text-[11px] font-semibold text-center leading-tight px-1 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-dark'}`}>
-                    {stage.label}
-                  </span>
+                  {/* Fixed label area — always visible, never moves */}
+                  <div className="h-20 flex flex-col items-center justify-center gap-1 px-1">
+                    <span className={`text-lg leading-none transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
+                      {stage.icon}
+                    </span>
+                    <span className={`text-[11px] font-semibold text-center leading-tight transition-colors duration-300 ${isActive ? 'text-primary' : 'text-dark'}`}>
+                      {stage.label}
+                    </span>
+                  </div>
+                  {/* Hover description — expands below the label */}
+                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${hoveredStage === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="border-t border-gray-100 mx-3 pt-2 pb-3">
+                      <p className="text-[11px] text-muted leading-relaxed text-center">{stage.tooltip}</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Arrow connector */}
@@ -280,26 +292,6 @@ export default function DataFlow({ onFirstTrigger }) {
             )
           })}
         </div>
-      </div>
-
-      {/* Stage description panel — updates as pulse arrives at each stage */}
-      <div className="min-h-[80px] rounded-xl border-l-4 border-[#714dff] bg-[#f5f3ff] px-5 py-4 transition-opacity duration-300"
-           style={{ opacity: active && activeStage >= 0 ? 1 : 0 }}>
-        {active && activeStage >= 0 && (
-          <>
-            <p className="text-[11px] font-semibold text-purple-400 uppercase tracking-widest mb-1.5">
-              {STAGES[activeStage].label}
-              {animating && <span className="ml-2 normal-case tracking-normal font-normal text-gray-400 animate-pulse">processing…</span>}
-            </p>
-            <p
-              key={`desc-${active}-${activeStage}`}
-              className="text-sm text-gray-700 leading-relaxed"
-              style={{ animation: 'stage-fade-in 0.3s ease-out' }}
-            >
-              {TRIGGERS[active].details[activeStage].value}
-            </p>
-          </>
-        )}
       </div>
 
       {/* Active event summary */}

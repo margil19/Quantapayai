@@ -79,7 +79,9 @@ export default function Part3BuildBuy({ onFirstCardClick }) {
               onClick={() => { setOpen(isOpen ? null : row.hris); if (!isOpen && onFirstCardClick) onFirstCardClick() }}
             >
               <div className="px-5 py-4 flex items-center gap-4">
-                {/* Decision badge — first thing the eye lands on */}
+                {/* Left chevron indicator */}
+                <span className={`text-gray-400 transition-transform duration-200 shrink-0 text-xs ${isOpen ? 'rotate-90' : ''}`}>▶</span>
+                {/* Decision badge */}
                 <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${d.bg} ${d.text} shrink-0 min-w-[140px] text-center`}>
                   {d.label}
                 </span>
@@ -87,11 +89,10 @@ export default function Part3BuildBuy({ onFirstCardClick }) {
                   <span className="text-sm font-semibold text-dark">{row.hris}</span>
                   <p className="text-xs text-muted mt-0.5">{row.signal}</p>
                 </div>
-                <span className={`text-xs text-gray-400 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`}>▾</span>
               </div>
 
               {isOpen && (
-                <div className="px-5 pb-5 pt-1 space-y-3 border-t border-gray-100" onClick={e => e.stopPropagation()}>
+                <div className="px-5 pb-5 pt-1 space-y-3 border-t border-gray-100">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="bg-white rounded-lg border border-gray-100 px-3 py-2">
                       <p className="text-xs font-semibold text-gray-500 mb-1">API Quality</p>

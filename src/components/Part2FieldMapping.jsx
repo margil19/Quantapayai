@@ -78,7 +78,7 @@ function rowBorder(status, overridden) {
 
 export default function Part2FieldMapping({ onFirstCardClick }) {
   const [overrides, setOverrides] = useState({})
-  const [confirmed, setConfirmed] = useState(false)
+  const [confirmedFlash, setConfirmedFlash] = useState(false)
   const [callbackFired, setCallbackFired] = useState(false)
 
   const fireCallback = () => {
@@ -92,19 +92,9 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
     setOverrides(prev => ({ ...prev, [fieldName]: value }))
   }
 
-  if (confirmed) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl">✓</div>
-        <h3 className="text-lg font-semibold text-dark">Mapping confirmed</h3>
-        <p className="text-sm text-muted max-w-md">
-          9 fields mapped, 1 skipped. Dry-run sync will validate against 10 sample employee records before go-live.
-        </p>
-        <button onClick={() => { setConfirmed(false); setOverrides({}) }} className="text-xs text-primary border border-primary/30 rounded-lg px-3 py-1.5 hover:bg-purple-50 transition-colors">
-          Reset demo
-        </button>
-      </div>
-    )
+  const handleConfirmMapping = () => {
+    setConfirmedFlash(true)
+    setTimeout(() => setConfirmedFlash(false), 2000)
   }
 
   return (
@@ -230,10 +220,15 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
               })}
             </div>
             <button
-              onClick={() => setConfirmed(true)}
-              className="w-full mt-4 bg-primary text-white text-sm font-medium rounded-xl py-2.5 hover:bg-primary/90 transition-colors"
+              onClick={handleConfirmMapping}
+              disabled={confirmedFlash}
+              className={`w-full mt-4 text-sm font-medium rounded-xl py-2.5 transition-all duration-300 ${
+                confirmedFlash
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-primary text-white hover:bg-primary/90'
+              }`}
             >
-              Confirm Mapping
+              {confirmedFlash ? '✓ Mapping confirmed' : 'Confirm Mapping'}
             </button>
           </div>
         </div>

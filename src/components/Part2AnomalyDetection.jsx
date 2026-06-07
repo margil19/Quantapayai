@@ -78,7 +78,12 @@ function SyncCard({ card }) {
             <p className="text-xs text-gray-400 mt-0.5">{card.detail}</p>
           </div>
           {card.status !== 'normal' && (
-            <span className="text-lg shrink-0">{expanded ? '⚠️' : '⚠️'}</span>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <span className="text-lg">⚠️</span>
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded transition-colors ${expanded ? 'text-gray-400' : 'text-amber-600 bg-amber-50 border border-amber-200'}`}>
+                {expanded ? '▲ close' : '▼ review'}
+              </span>
+            </div>
           )}
           {card.status === 'normal' && (
             <span className="text-lg shrink-0">✓</span>

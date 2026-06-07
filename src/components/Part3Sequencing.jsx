@@ -65,7 +65,7 @@ function urgencyStyles(urgency) {
   if (urgency === 'critical') return { card: 'border-primary/30 bg-white shadow-md shadow-primary/5', pos: 'bg-primary text-white w-10 h-10 text-base', name: 'text-xl font-bold', opacity: '' }
   if (urgency === 'high') return { card: 'border-gray-200 bg-white', pos: 'bg-gray-800 text-white w-8 h-8 text-sm', name: 'text-base font-semibold', opacity: '' }
   if (urgency === 'medium') return { card: 'border-gray-200 bg-white', pos: 'bg-gray-600 text-white w-8 h-8 text-sm', name: 'text-base font-semibold', opacity: '' }
-  return { card: 'border-gray-100 bg-gray-50/60', pos: 'bg-gray-300 text-gray-600 w-7 h-7 text-xs', name: 'text-sm font-medium text-gray-500', opacity: 'opacity-70' }
+  return { card: 'border-gray-200 bg-white', pos: 'bg-gray-600 text-white w-8 h-8 text-sm', name: 'text-base font-semibold', opacity: '' }
 }
 
 export default function Part3Sequencing() {

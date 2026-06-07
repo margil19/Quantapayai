@@ -3,8 +3,7 @@ import { useState } from 'react'
 const CATEGORY_COLORS = {
   'Data Mapping': 'bg-blue-100 text-blue-700',
   'Timing': 'bg-orange-100 text-orange-700',
-  'API Regression': 'bg-red-100 text-red-700',
-  'Config Error': 'bg-yellow-100 text-yellow-700',
+'Config Error': 'bg-yellow-100 text-yellow-700',
   'Idempotency': 'bg-violet-100 text-violet-700',
 }
 
@@ -28,16 +27,6 @@ const FAILURE_MODES = [
     detected: 'QuantapayAI spots that the last day falls within the current pay cycle and immediately shows a countdown to the HR admin: "Approve by June 10th to avoid a compliance issue." It\'s surfaced as urgent, not buried in a queue.',
     notified: 'HR admin gets a push notification and email with the exact deadline. If they haven\'t acted 48 hours before the cutoff, it automatically escalates to the HR Manager. If payroll locks without action, the support team is alerted to run a manual off-cycle payment.',
     matters: 'In countries like the UK, Germany, and in California, paying someone late after they leave is a legal violation — not just an inconvenience. QuantapayAI has to surface this proactively, not wait for someone to notice.',
-  },
-  {
-    id: 'FM-3',
-    category: 'API Regression',
-    title: 'Workday API Version Upgrade Breaks Schema',
-    description: 'Workday v42 renames a field. Customer tenant auto-upgrades. Normalization layer expects old structure.',
-    what: 'Think of it like Workday rearranging the furniture without telling anyone. Workday releases an update that moves a key piece of data — the worker\'s employment type — to a different location in their system. Acme Corp\'s Workday account updates automatically overnight. QuantapayAI is still looking in the old place, finds nothing, and that field goes blank for every employee pulled after the update.',
-    detected: 'QuantapayAI keeps a "canary" — a dummy test employee in every customer\'s account that it checks every 30 minutes. If that test record starts coming back wrong, the alarm fires before any real employee data is affected.',
-    notified: 'The QuantapayAI engineering team gets an immediate alert and starts a fix. Affected customers\' support reps are emailed within 15 minutes. HR admins see a banner: "Workday sync is paused while we investigate — no data has been lost."',
-    matters: 'The sync pauses cleanly instead of quietly writing bad data. Once the fix is live, QuantapayAI replays all the missed changes automatically — HR doesn\'t have to re-enter anything manually.',
   },
   {
     id: 'FM-4',

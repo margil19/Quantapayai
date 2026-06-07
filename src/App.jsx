@@ -165,13 +165,13 @@ function WelcomeModal({ onDismiss }) {
 }
 
 // ─── Tour bar ─────────────────────────────────────────────────────────────────
-function TourBar({ visited, onNavigate, onDismiss }) {
+function TourBar({ visited, isPartComplete, onNavigate, onDismiss }) {
   return (
     <div className="bg-white border-b border-gray-100 px-4 py-2">
       <div className="max-w-6xl mx-auto flex items-center gap-1 flex-wrap">
         <span className="text-xs text-muted mr-2 shrink-0">Your tour:</span>
         {TOUR_STEPS.map((step, i) => {
-          const done = visited.includes(step.partId)
+          const done = isPartComplete(step.partId, visited)
           return (
             <button
               key={step.partId}
@@ -211,25 +211,40 @@ export default function App() {
   const [infoPulse,     setInfoPulse]     = useState(false)
   const pulseTimerRef = useRef(null)
 
-  // Tour bar
+  // Tour bar — tracks visited sections as "partId:sectionId" keys
+  const PART_SECTIONS_MAP = {
+    part1: PART1_SECTIONS.map(s => s.id),
+    part2: PART2_SECTIONS.map(s => s.id),
+    part3: PART3_SECTIONS.map(s => s.id),
+    part4: PART4_SECTIONS.map(s => s.id),
+    bonus: ['main'],
+  }
+  const sectionKey = (partId, sectionId) => `${partId}:${sectionId}`
+  const isPartComplete = (partId, visited) =>
+    PART_SECTIONS_MAP[partId].every(sid => visited.includes(sectionKey(partId, sid)))
+
   const [tourDismissed, setTourDismissed] = useState(() => !!localStorage.getItem(LS_TOUR_DISMISSED))
   const [tourVisited,   setTourVisited]   = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS_TOUR_VISITED) || '[]') }
     catch { return [] }
   })
 
-  // Mark current part visited
+  // Current active section per part
+  const activeSectionMap = { part1: p1Section, part2: p2Section, part3: p3Section, part4: p4Section, bonus: 'main' }
+
+  // Mark current section visited
   useEffect(() => {
-    if (!tourVisited.includes(activePart)) {
-      const next = [...tourVisited, activePart]
+    const key = sectionKey(activePart, activeSectionMap[activePart])
+    if (!tourVisited.includes(key)) {
+      const next = [...tourVisited, key]
       setTourVisited(next)
       localStorage.setItem(LS_TOUR_VISITED, JSON.stringify(next))
     }
-  }, [activePart]) // eslint-disable-line
+  }, [activePart, p1Section, p2Section, p3Section, p4Section]) // eslint-disable-line
 
-  // Auto-dismiss tour bar when all parts visited
+  // Auto-dismiss tour bar when all parts complete
   useEffect(() => {
-    if (!tourDismissed && tourVisited.length >= PARTS.length) {
+    if (!tourDismissed && PARTS.every(p => isPartComplete(p.id, tourVisited))) {
       const t = setTimeout(() => handleTourDismiss(), 1500)
       return () => clearTimeout(t)
     }
@@ -257,7 +272,7 @@ export default function App() {
       {showWelcome && <WelcomeModal onDismiss={handleWelcomeDismiss} />}
 
       {showTourBar && (
-        <TourBar visited={tourVisited} onNavigate={handlePartSwitch} onDismiss={handleTourDismiss} />
+        <TourBar visited={tourVisited} isPartComplete={isPartComplete} onNavigate={handlePartSwitch} onDismiss={handleTourDismiss} />
       )}
 
       {/* Top nav */}

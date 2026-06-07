@@ -134,7 +134,7 @@ function WelcomeModal({ onDismiss }) {
             ['Part 2 - AI in the Integration Layer', "See where AI helps and where it shouldn't"],
             ['Part 3 - Prioritization', 'Click each HRIS card to see the build / buy / partner decision'],
             ['Part 4 - Error UX', 'Interact with the wireframes like a real product'],
-            ['Bonus - Health Dashboard', 'The dashboard every ops team needs - going beyond what was asked'],
+            ['Bonus - Health Dashboard', 'A little something extra - an integration health dashboard for the ops team'],
           ].map(([title, desc], i) => (
             <li key={i} className="flex items-start gap-3 text-sm">
               <span className="text-primary font-semibold shrink-0 w-5 text-center">{CIRCLE[i]}</span>

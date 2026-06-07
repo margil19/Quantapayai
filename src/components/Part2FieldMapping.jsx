@@ -58,8 +58,6 @@ const PAINFUL_DROPDOWNS = {
   ],
 }
 
-const OVERRIDE_OPTIONS = ['termination_date', 'employment_end_date', 'last_working_day', '— skip this field —']
-const OVERRIDE_OPTIONS_CC = ['cost_center_id', 'department_name', 'cost_allocation_code', '— skip this field —']
 
 function confidenceBadge(score, status) {
   if (status === 'unknown') return { bg: 'bg-red-100 text-red-700', label: 'No match' }
@@ -77,7 +75,6 @@ function rowBorder(status, overridden) {
 }
 
 export default function Part2FieldMapping({ onFirstCardClick }) {
-  const [overrides, setOverrides] = useState({})
   const [confirmedFlash, setConfirmedFlash] = useState(false)
   const [callbackFired, setCallbackFired] = useState(false)
 
@@ -86,11 +83,6 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
       onFirstCardClick()
       setCallbackFired(true)
     }
-  }
-
-  const handleOverride = (fieldName, value) => {
-    setOverrides(prev => ({ ...prev, [fieldName]: value }))
-    setConfirmedFlash(false)
   }
 
   const handleConfirmMapping = () => {
@@ -165,59 +157,20 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
             <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">15–20 min</span>
           </div>
           <div className="p-4">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mb-1 px-1">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"/> Auto-confirmed (&gt;90%)</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block"/> Needs review (60–90%)</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"/> Flag (&lt;60%)</span>
-            </div>
-            <p className="text-[11px] text-gray-400 italic px-1 mb-3">Click any mapped field to override it</p>
             <div className="space-y-1.5">
               {FIELDS.map((f) => {
                 const badge = confidenceBadge(f.confidence, f.status)
-                const isOverridden = overrides[f.workday] !== undefined
-                const borderCls = rowBorder(f.status, isOverridden)
+                const borderCls = rowBorder(f.status, false)
                 return (
                   <div key={f.workday} className={`rounded-lg border border-gray-100 px-3 py-2 ${borderCls}`}>
                     <div className="flex items-center gap-2 text-xs min-w-0">
-                      <span className="font-mono text-gray-700 w-32 shrink-0 truncate">{f.workday}</span>
+                      <span className="font-mono text-gray-700 w-36 shrink-0 truncate">{f.workday}</span>
                       <span className="text-gray-300 shrink-0">→</span>
-                      {f.status === 'unknown' ? (
-                        <select
-                          className="flex-1 text-xs border border-red-200 rounded px-1.5 py-0.5 text-dark bg-white"
-                          onChange={(e) => handleOverride(f.workday, e.target.value)}
-                          defaultValue=""
-                        >
-                          <option value="">Select mapping…</option>
-                          <option>eor_flag</option>
-                          <option>custom_attribute_1</option>
-                          <option>— skip this field —</option>
-                        </select>
-                      ) : f.status === 'flagged' ? (
-                        <select
-                          className="flex-1 text-xs border border-red-200 rounded px-1.5 py-0.5 text-dark bg-white"
-                          onChange={(e) => handleOverride(f.workday, e.target.value)}
-                          defaultValue={f.quantapay || ''}
-                        >
-                          {(f.workday === 'Termination_Date' ? OVERRIDE_OPTIONS : OVERRIDE_OPTIONS_CC).map(o => (
-                            <option key={o}>{o}</option>
-                          ))}
-                        </select>
-                      ) : isOverridden ? (
-                        <span className="flex-1 font-mono text-primary text-xs">{overrides[f.workday]}</span>
-                      ) : (
-                        <span
-                          className="flex-1 font-mono text-gray-600 text-xs cursor-pointer hover:text-primary group flex items-center gap-1"
-                          onClick={() => handleOverride(f.workday, f.quantapay + ' (edited)')}
-                        >
-                          {f.quantapay}
-                          <span className="text-gray-300 group-hover:text-primary transition-colors text-[10px]">✎</span>
-                        </span>
-                      )}
+                      <span className="flex-1 font-mono text-gray-600 text-xs truncate">
+                        {f.quantapay ?? <span className="text-gray-300 italic">no match found</span>}
+                      </span>
                       <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 ${badge.bg}`}>{badge.label}</span>
                     </div>
-                    {f.sample && f.sample !== '—' && (
-                      <p className="text-xs text-gray-400 mt-0.5 ml-0 pl-0">Sample: <span className="font-mono">{f.sample}</span></p>
-                    )}
                   </div>
                 )
               })}

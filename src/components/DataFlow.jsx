@@ -120,8 +120,6 @@ export default function DataFlow({ onFirstTrigger }) {
   const [active, setActive] = useState(null)
   const [animating, setAnimating] = useState(false)
   const [activeStage, setActiveStage] = useState(-1)
-  const [looping, setLooping] = useState(false)
-  const [tooltip, setTooltip] = useState(null)
   const [triggerFiredOnce, setTriggerFiredOnce] = useState(false)
 
   // CHANGE 4 — trigger hint banner (first session only)
@@ -142,7 +140,6 @@ export default function DataFlow({ onFirstTrigger }) {
     setActive(name)
     setAnimating(true)
     setActiveStage(0)
-    setLooping(false)
 
     let step = 0
     const interval = setInterval(() => {
@@ -151,7 +148,6 @@ export default function DataFlow({ onFirstTrigger }) {
         clearInterval(interval)
         setAnimating(false)
         setActiveStage(STAGES.length - 1)
-        setLooping(true)
       } else {
         setActiveStage(step)
       }
@@ -207,7 +203,7 @@ export default function DataFlow({ onFirstTrigger }) {
         ))}
         {active && (
           <button
-            onClick={() => { setActive(null); setActiveStage(-1); setAnimating(false); setLooping(false) }}
+            onClick={() => { setActive(null); setActiveStage(-1); setAnimating(false) }}
             className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-muted hover:text-dark transition-colors"
           >
             Reset
@@ -217,23 +213,24 @@ export default function DataFlow({ onFirstTrigger }) {
 
       {/* Pipeline */}
       <div className="relative overflow-x-auto pb-2">
-        <div className="flex items-center gap-0 min-w-[700px]">
+        <div className="flex items-center gap-0 min-w-[620px]">
           {STAGES.map((stage, i) => {
-            const isActive  = activeStage === i && animating
-            const isPast    = activeStage > i || (active && !animating && activeStage >= 0)
-            const arrowLit  = activeStage > i || (active && !animating && activeStage >= 0)
-            const arrowPulsing = activeStage === i && animating  // dot traveling to next stage
+            const isActive     = activeStage === i && animating
+            const isPast       = activeStage > i || (active && !animating && activeStage >= 0)
+            const arrowLit     = activeStage > i || (active && !animating && activeStage >= 0)
+            const arrowPulsing = activeStage === i && animating
 
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
-                {/* Stage box */}
+
+                {/* Stage box — fixed height, icon + label only, never resizes */}
                 <div
                   key={`${stage.id}-${active ?? 'none'}`}
-                  className={`flex-1 min-w-0 rounded-xl border-2 cursor-pointer select-none transition-colors duration-300 ${
-                    isActive || isPast
-                      ? isPast && !isActive
-                        ? 'border-primary bg-purple-50/40'
-                        : 'border-primary bg-purple-50'
+                  className={`flex-1 min-w-0 h-20 rounded-xl border-2 select-none transition-colors duration-300 flex flex-col items-center justify-center gap-1 ${
+                    isActive
+                      ? 'border-primary bg-purple-50'
+                      : isPast
+                      ? 'border-primary bg-purple-50/40'
                       : 'border-gray-200 bg-white'
                   }`}
                   style={
@@ -243,25 +240,13 @@ export default function DataFlow({ onFirstTrigger }) {
                       ? { boxShadow: '0 0 6px 2px rgba(113,77,255,0.07)' }
                       : {}
                   }
-                  onMouseEnter={() => setTooltip(stage.id)}
-                  onMouseLeave={() => setTooltip(null)}
                 >
-                  <div className="p-4">
-                    <div className={`text-xl mb-2 transition-colors duration-300 ${isActive || isPast ? (isActive ? 'text-primary' : 'text-purple-400') : 'text-gray-300'}`}>
-                      {stage.icon}
-                    </div>
-                    <div className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-dark' : 'text-dark'}`}>
-                      {stage.label}
-                    </div>
-                    {tooltip === stage.id && (
-                      <div className="text-xs text-muted leading-relaxed mt-1 border-t border-gray-100 pt-2 transition-opacity duration-300">
-                        {stage.tooltip}
-                      </div>
-                    )}
-                    <div className={`text-xs mt-1 text-purple-400 transition-opacity duration-300 ${isPast && !isActive ? 'opacity-100' : 'opacity-0 select-none pointer-events-none'}`}>
-                      ✓ processed
-                    </div>
-                  </div>
+                  <span className={`text-lg leading-none transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
+                    {stage.icon}
+                  </span>
+                  <span className={`text-[11px] font-semibold text-center leading-tight px-1 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-dark'}`}>
+                    {stage.label}
+                  </span>
                 </div>
 
                 {/* Arrow connector */}
@@ -277,7 +262,6 @@ export default function DataFlow({ onFirstTrigger }) {
                         style={{ transition: 'stroke 0.3s' }}
                       />
                     </svg>
-                    {/* Traveling pulse dot */}
                     <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none">
                       {arrowPulsing && (
                         <div
@@ -288,37 +272,35 @@ export default function DataFlow({ onFirstTrigger }) {
                           }}
                         />
                       )}
-                      {looping && !arrowPulsing && (
-                        <div
-                          className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"
-                          style={{
-                            boxShadow: '0 0 5px 2px rgba(113,77,255,0.4)',
-                            animation: 'arrow-heartbeat 2s linear infinite',
-                            animationDelay: `${i * 0.5}s`,
-                          }}
-                        />
-                      )}
                     </div>
                   </div>
                 )}
+
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Active stage detail — shown below the pipeline, never inside a box */}
-      {active && activeStage >= 0 && activeStage < STAGES.length && (
-        <div className={`rounded-xl border px-4 py-3 transition-all duration-300 ${currentData?.bgLight}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className={`text-xs font-semibold ${currentData?.textColor}`}>{STAGES[activeStage].label}</span>
-            {animating && <span className="text-xs text-gray-400 animate-pulse">processing…</span>}
-          </div>
-          <p className={`text-sm leading-relaxed ${currentData?.textColor}`}>
-            {TRIGGERS[active].details[activeStage].value}
-          </p>
-        </div>
-      )}
+      {/* Stage description panel — updates as pulse arrives at each stage */}
+      <div className="min-h-[80px] rounded-xl border-l-4 border-[#714dff] bg-[#f5f3ff] px-5 py-4 transition-opacity duration-300"
+           style={{ opacity: active && activeStage >= 0 ? 1 : 0 }}>
+        {active && activeStage >= 0 && (
+          <>
+            <p className="text-[11px] font-semibold text-purple-400 uppercase tracking-widest mb-1.5">
+              {STAGES[activeStage].label}
+              {animating && <span className="ml-2 normal-case tracking-normal font-normal text-gray-400 animate-pulse">processing…</span>}
+            </p>
+            <p
+              key={`desc-${active}-${activeStage}`}
+              className="text-sm text-gray-700 leading-relaxed"
+              style={{ animation: 'stage-fade-in 0.3s ease-out' }}
+            >
+              {TRIGGERS[active].details[activeStage].value}
+            </p>
+          </>
+        )}
+      </div>
 
       {/* Active event summary */}
       {active && activeStage === STAGES.length - 1 && (

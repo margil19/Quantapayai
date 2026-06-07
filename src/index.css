@@ -54,10 +54,8 @@
   100% { box-shadow: 0 0 8px 3px rgba(113, 77, 255, 0.08); }
 }
 
-/* DataFlow pipeline — slow heartbeat loop after all stages complete */
-@keyframes arrow-heartbeat {
-  0%        { transform: translateX(-300%); opacity: 0; }
-  5%        { opacity: 0.65; }
-  20%       { transform: translateX(400%); opacity: 0.65; }
-  25%, 100% { transform: translateX(400%); opacity: 0; }
+/* DataFlow pipeline — description panel fade-in on stage change */
+@keyframes stage-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }

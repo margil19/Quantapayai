@@ -8,12 +8,12 @@ const FIELDS = [
   { workday: 'Annual_Base_Salary',   quantapay: 'annual_salary_amount',    confidence: 96, sample: '$112,000.00 USD', status: 'auto' },
   { workday: 'Worker_Type',          quantapay: 'employment_classification', confidence: 95, sample: 'Employee',      status: 'auto' },
   { workday: 'Work_Location_Country', quantapay: 'work_country',           confidence: 95, sample: 'United States',  status: 'auto' },
-  { workday: 'Termination_Date',     quantapay: 'termination_date',        confidence: 52, sample: '—',               status: 'flagged',
+  { workday: 'Termination_Date',     quantapay: 'termination_date',        confidence: 52, sample: 'N/A',               status: 'flagged',
     correctOption: 'termination_date', options: ['termination_date', 'last_working_day', 'contract_end_date', 'benefits_end_date'] },
   { workday: 'Cost_Center_Reference', quantapay: 'cost_center_id',         confidence: 38, sample: 'CC-1042-ENG',    status: 'flagged',
     correctOption: 'cost_center_id', options: ['cost_center_id', 'department_id', 'cost_allocation_code', 'gl_account'] },
   { workday: 'Custom_Attr_EOR_Flag', quantapay: null,                      confidence: 0,  sample: 'TRUE',            status: 'unknown',
-    correctOption: 'eor_flag', options: ['eor_flag', 'custom_attribute_1', 'compliance_flag', '— skip this field —'] },
+    correctOption: 'eor_flag', options: ['eor_flag', 'custom_attribute_1', 'compliance_flag', 'Skip this field'] },
 ]
 
 const MANUAL_FIELDS_SIMPLE = [
@@ -31,7 +31,7 @@ const MANUAL_FIELDS_SIMPLE = [
 
 const PAINFUL_DROPDOWNS = {
   salary: [
-    '— select a field —',
+    'Select a field',
     'Total_Comp_Package',
     'Base_Salary_Annual',
     'Comp_Grade_Amount',
@@ -41,7 +41,7 @@ const PAINFUL_DROPDOWNS = {
     'Annual_Salary_Amount',
   ],
   hire_date: [
-    '— select a field —',
+    'Select a field',
     'Onboarding_Start_Date',
     'Contract_Effective_Date',
     'Employment_Start_Date',
@@ -50,7 +50,7 @@ const PAINFUL_DROPDOWNS = {
     'Benefits_Eligibility_Date',
   ],
   worker_type: [
-    '— select a field —',
+    'Select a field',
     'Employment_Classification',
     'Contingent_Worker_Subtype',
     'Worker_Category_Code',
@@ -98,12 +98,12 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Intelligent Field Mapping</h2>
         <p className="text-sm text-muted mb-3">
-          Without AI, an HR admin manually connects every Workday field to QuantapayAI — a 2–4 hour process that's easy to get wrong. With AI, the mapping is pre-filled with confidence scores. The admin reviews and confirms, not builds from scratch.
+          Without AI, an HR admin manually connects every Workday field to QuantapayAI - a 2–4 hour process that's easy to get wrong. With AI, the mapping is pre-filled with confidence scores. The admin reviews and confirms, not builds from scratch.
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
           <p className="text-xs text-muted leading-relaxed">
-            AI suggests based on field names, sample values, and patterns from similar Workday tenants. The HR admin confirms before anything goes live — even high-confidence fields.
+            AI suggests based on field names, sample values, and patterns from similar Workday tenants. The HR admin confirms before anything goes live - even high-confidence fields.
           </p>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
           <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Without AI</span>
-              <p className="text-sm font-medium text-dark mt-0.5">Manual mapping — field by field</p>
+              <p className="text-sm font-medium text-dark mt-0.5">Manual mapping - field by field</p>
             </div>
             <span className="text-xs text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">2–4 hrs</span>
           </div>
@@ -147,7 +147,7 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
             ))}
           </div>
           <p className="px-4 pb-4 text-xs text-gray-400 leading-relaxed">
-            An admin mapping 40 fields like this takes 2–4 hours — and one wrong pick corrupts every sync that follows.
+            An admin mapping 40 fields like this takes 2–4 hours - and one wrong pick corrupts every sync that follows.
           </p>
         </div>
 
@@ -156,7 +156,7 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
           <div className="bg-purple-50 border-b border-primary/20 px-4 py-3 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-primary uppercase tracking-wide">With AI</span>
-              <p className="text-sm font-medium text-dark mt-0.5">Pre-filled — review and confirm</p>
+              <p className="text-sm font-medium text-dark mt-0.5">Pre-filled - review and confirm</p>
             </div>
             <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">15–20 min</span>
           </div>
@@ -187,7 +187,7 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
                           value={sel ?? ''}
                           onChange={e => setSelections(prev => ({ ...prev, [f.workday]: e.target.value }))}
                         >
-                          <option value="">— choose mapping —</option>
+                          <option value="">- choose mapping -</option>
                           {f.options.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       ) : (

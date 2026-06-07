@@ -17,7 +17,7 @@ const ITEMS = [
     decision: 'Partner',
     decisionColor: 'bg-teal-500 text-white',
     timeline: 'run parallel to Workday',
-    why: '14 CS tickets is the loudest existing-customer signal. A partner connector ships in weeks, not quarters — run this alongside Workday at low eng cost.',
+    why: '14 CS tickets is the loudest existing-customer signal. A partner connector ships in weeks, not quarters - run this alongside Workday at low eng cost.',
     revenueAtRisk: null,
     revenueLabel: 'CS noise + churn risk',
     revenueColor: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -41,7 +41,7 @@ const ITEMS = [
     decision: 'Buy',
     decisionColor: 'bg-amber-400 text-dark',
     timeline: 'commercial conversation first',
-    why: "Next action is immediate — check whether an off-the-shelf connector already exists. That answer comes back in days, not weeks. Don't let a $900K deal sit unaddressed while the answer is a quick lookup.",
+    why: "Next action is immediate - check whether an off-the-shelf connector already exists. That answer comes back in days, not weeks. Don't let a $900K deal sit unaddressed while the answer is a quick lookup.",
     revenueAtRisk: '$900K',
     revenueLabel: 'deal structure matters',
     revenueColor: 'bg-gray-100 text-gray-500 border-gray-200',
@@ -50,10 +50,10 @@ const ITEMS = [
   {
     pos: 5,
     name: 'Rippling',
-    decision: 'Partner — cautious',
+    decision: 'Partner - cautious',
     decisionColor: 'bg-amber-500 text-white',
     timeline: 'after segment validation',
-    why: "Next action is waiting — waiting for prospects to move. Nothing to build or buy until at least 2 of the 3 prospects convert. Rippling competes in payroll and can restrict the integration at will.",
+    why: "Next action is waiting - waiting for prospects to move. Nothing to build or buy until at least 2 of the 3 prospects convert. Rippling competes in payroll and can restrict the integration at will.",
     revenueAtRisk: null,
     revenueLabel: '3 prospects, unproven',
     revenueColor: 'bg-gray-100 text-gray-500 border-gray-200',
@@ -79,7 +79,7 @@ export default function Part3Sequencing() {
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
           <p className="text-xs text-muted leading-relaxed">
-            The sequence is a starting position, not a commitment. It holds until new data arrives — deal close timelines, churn signals, partner coverage gaps. See the "What Would Change This" section for the exact data points that could shift it.
+            The sequence is a starting position, not a commitment. It holds until new data arrives - deal close timelines, churn signals, partner coverage gaps. See the "What Would Change This" section for the exact data points that could shift it.
           </p>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function Part3Sequencing() {
                         {item.decision}
                       </span>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${item.revenueColor}`}>
-                        {item.revenueAtRisk ? `${item.revenueAtRisk} — ` : ''}{item.revenueLabel}
+                        {item.revenueAtRisk ? `${item.revenueAtRisk} - ` : ''}{item.revenueLabel}
                       </span>
                     </div>
                     {item.timeline && <p className="text-xs text-muted mb-2">{item.timeline}</p>}

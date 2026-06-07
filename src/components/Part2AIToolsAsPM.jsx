@@ -9,7 +9,7 @@ const TOOLS = [
   },
   {
     tool: 'Perplexity',
-    description: 'Quick regulatory lookups across jurisdictions. Statutory pay rules, misclassification laws, compliance context — without digging through legal databases.',
+    description: 'Quick regulatory lookups across jurisdictions. Statutory pay rules, misclassification laws, compliance context - without digging through legal databases.',
   },
   {
     tool: 'NotebookLM',
@@ -36,7 +36,7 @@ export default function Part2AIToolsAsPM() {
       <div className="border-t border-gray-100 pt-6">
         <p className="text-sm font-semibold text-dark mb-1">What AI doesn't replace</p>
         <p className="text-xs text-muted leading-relaxed max-w-2xl">
-          The judgment calls — which failure modes actually matter, where to draw the trust tier line, which deal is worth pursuing. AI compresses the research-to-artifact gap. The decisions stay with the PM.
+          The judgment calls - which failure modes actually matter, where to draw the trust tier line, which deal is worth pursuing. AI compresses the research-to-artifact gap. The decisions stay with the PM.
         </p>
       </div>
     </div>

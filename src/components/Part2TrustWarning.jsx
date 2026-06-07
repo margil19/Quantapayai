@@ -1,13 +1,13 @@
 const SCENARIOS = [
   {
-    scenario: 'Termination — employee in Germany',
+    scenario: 'Termination - employee in Germany',
     aiDecision: 'AI assigns Direct Write (90% confidence it\'s routine)',
     consequence: 'Termination applied immediately without HR review. Final pay calculated without checking German statutory rules. Statutory fine issued. The company owes back wages and faces regulatory scrutiny.',
     jurisdiction: 'Germany',
   },
   {
-    scenario: 'Salary update — $85,000 → $95,000 promotion',
-    aiDecision: 'AI assigns Suggested Action (uncertain — only 60% confident)',
+    scenario: 'Salary update - $85,000 → $95,000 promotion',
+    aiDecision: 'AI assigns Suggested Action (uncertain - only 60% confident)',
     consequence: 'The change sits unactioned in a suggestions panel. No one approves it. The employee is paid at the old rate for two cycles. A payroll correction is required. The employee loses trust.',
     jurisdiction: 'United States',
   },
@@ -23,12 +23,12 @@ export default function Part2TrustWarning() {
         </div>
         <h2 className="text-2xl font-bold text-dark mb-2">Trust tier assignment is deterministic rules, not AI.</h2>
         <p className="text-sm text-muted max-w-2xl leading-relaxed mb-3">
-          Deciding whether a change writes directly, queues for approval, or gets surfaced as a suggestion is a policy decision — not a prediction. The rules are known, stable, and don't improve with more data. Adding AI here introduces errors on questions that already have right answers.
+          Deciding whether a change writes directly, queues for approval, or gets surfaced as a suggestion is a policy decision - not a prediction. The rules are known, stable, and don't improve with more data. Adding AI here introduces errors on questions that already have right answers.
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
           <p className="text-xs text-muted leading-relaxed">
-            Does this change affect current-cycle payroll? Is it irreversible without legal consequence? These are yes/no questions. A rule answers them perfectly, every time. An AI model answers them probabilistically — which means sometimes wrong on the most critical decisions.
+            Does this change affect current-cycle payroll? Is it irreversible without legal consequence? These are yes/no questions. A rule answers them perfectly, every time. An AI model answers them probabilistically - which means sometimes wrong on the most critical decisions.
           </p>
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function Part2TrustWarning() {
           ))}
         </div>
         <p className="text-xs text-muted italic mt-4 pt-3 border-t border-gray-200">
-          These are illustrative examples of the rule logic — not an exhaustive list. The full rule set expands as new action types, jurisdictions, and edge cases are added to the integration.
+          These are illustrative examples of the rule logic - not an exhaustive list. The full rule set expands as new action types, jurisdictions, and edge cases are added to the integration.
         </p>
       </div>
     </div>

@@ -16,29 +16,29 @@ const TIERS = [
     actions: [
       {
         name: 'Department Change',
-        reversibility: 'High — fully editable at any time',
-        payrollConsequence: 'None — cost allocation only, no payroll impact',
+        reversibility: 'High - fully editable at any time',
+        payrollConsequence: 'None - cost allocation only, no payroll impact',
         regulatoryExposure: 'None',
         justification: 'Org structure changes carry zero payroll risk. Adding approval creates friction with no compliance benefit.',
       },
       {
         name: 'Manager Change',
-        reversibility: 'High — editable at any time',
-        payrollConsequence: 'None — hierarchy only',
+        reversibility: 'High - editable at any time',
+        payrollConsequence: 'None - hierarchy only',
         regulatoryExposure: 'None',
         justification: 'Reporting line changes are informational. Zero downstream payroll or compliance consequence.',
       },
       {
         name: 'Work Location (Same Country)',
         reversibility: 'High',
-        payrollConsequence: 'Low — may affect state tax bracket; auto-flagged if cross-state',
-        regulatoryExposure: 'Low — intra-country only',
+        payrollConsequence: 'Low - may affect state tax bracket; auto-flagged if cross-state',
+        regulatoryExposure: 'Low - intra-country only',
         justification: 'Intra-country relocation is low statutory risk. Cross-state tax implications are auto-flagged without blocking.',
       },
       {
-        name: 'New Hire — Identity Fields',
-        reversibility: 'High — all fields editable',
-        payrollConsequence: 'None — name and ID only, no current-cycle payroll',
+        name: 'New Hire - Identity Fields',
+        reversibility: 'High - all fields editable',
+        payrollConsequence: 'None - name and ID only, no current-cycle payroll',
         regulatoryExposure: 'Low',
         justification: 'Identity fields must sync fast to unblock onboarding. Blocking with approval slows access with zero risk reduction.',
       },
@@ -47,7 +47,7 @@ const TIERS = [
   {
     id: 'queue',
     label: 'Queue for Approval',
-    sublabel: 'Staged — HR must approve',
+    sublabel: 'Staged - HR must approve',
     color: 'amber',
     headerBg: 'bg-amber-50',
     headerBorder: 'border-amber-200',
@@ -58,30 +58,30 @@ const TIERS = [
     actions: [
       {
         name: 'Salary Update',
-        reversibility: 'Low — affects past payroll if retroactive',
-        payrollConsequence: 'CRITICAL — direct payroll output, next and possibly past cycles',
-        regulatoryExposure: 'High — statutory salary guarantee laws in many jurisdictions',
+        reversibility: 'Low - affects past payroll if retroactive',
+        payrollConsequence: 'CRITICAL - direct payroll output, next and possibly past cycles',
+        regulatoryExposure: 'High - statutory salary guarantee laws in many jurisdictions',
         justification: 'Salary is the highest-risk write in payroll. Overpay/underpay creates legal exposure that cannot be recalled. Always gates behind HR approval.',
       },
       {
         name: 'Termination',
-        reversibility: 'Irreversible — affects final pay, benefits, severance entitlements',
-        payrollConsequence: 'CRITICAL — final payslip, statutory payouts, benefit cutoffs',
-        regulatoryExposure: 'Critical — delayed final pay carries statutory fines in UK, Germany, California, and others',
+        reversibility: 'Irreversible - affects final pay, benefits, severance entitlements',
+        payrollConsequence: 'CRITICAL - final payslip, statutory payouts, benefit cutoffs',
+        regulatoryExposure: 'Critical - delayed final pay carries statutory fines in UK, Germany, California, and others',
         justification: 'Most consequential action in HR. Final pay rules vary by jurisdiction and termination reason. Never auto-applies regardless of API confidence.',
       },
       {
-        name: 'New Hire — Start Date',
-        reversibility: 'Medium — requires payroll correction if wrong',
-        payrollConsequence: 'HIGH — triggers first payroll cycle',
-        regulatoryExposure: 'Medium — wrong start date affects statutory benefits eligibility',
+        name: 'New Hire - Start Date',
+        reversibility: 'Medium - requires payroll correction if wrong',
+        payrollConsequence: 'HIGH - triggers first payroll cycle',
+        regulatoryExposure: 'Medium - wrong start date affects statutory benefits eligibility',
         justification: 'Incorrect start date = wrong first payslip. HR must verify before the payroll cycle locks.',
       },
       {
         name: 'Worker Type Change',
-        reversibility: 'Very Low — legal entity change, complex to reverse',
-        payrollConsequence: 'CRITICAL — determines EOR vs payroll routing and legal entity',
-        regulatoryExposure: 'Critical — misclassification is statutory liability in 60+ countries',
+        reversibility: 'Very Low - legal entity change, complex to reverse',
+        payrollConsequence: 'CRITICAL - determines EOR vs payroll routing and legal entity',
+        regulatoryExposure: 'Critical - misclassification is statutory liability in 60+ countries',
         justification: 'Employee ↔ EOR ↔ Contractor misclassification is a compliance catastrophe. This change must never auto-apply.',
       },
     ],
@@ -89,7 +89,7 @@ const TIERS = [
   {
     id: 'suggest',
     label: 'Suggested Action',
-    sublabel: 'Surfaced — no action taken',
+    sublabel: 'Surfaced - no action taken',
     color: 'purple',
     headerBg: 'bg-purple-50',
     headerBorder: 'border-purple-200',
@@ -100,17 +100,17 @@ const TIERS = [
     actions: [
       {
         name: 'Benefits Election Sync',
-        reversibility: 'Medium — plan changes have enrollment windows',
-        payrollConsequence: 'HIGH — affects premium deductions',
-        regulatoryExposure: 'Medium — benefit plan mismatches affect employee entitlements',
-        justification: "Benefits plans in QuantapayAI may not map 1:1 to Workday. Surfaced as a suggestion until the customer confirms the mapping — QuantapayAI can't validate correctness without HR context.",
+        reversibility: 'Medium - plan changes have enrollment windows',
+        payrollConsequence: 'HIGH - affects premium deductions',
+        regulatoryExposure: 'Medium - benefit plan mismatches affect employee entitlements',
+        justification: "Benefits plans in QuantapayAI may not map 1:1 to Workday. Surfaced as a suggestion until the customer confirms the mapping - QuantapayAI can't validate correctness without HR context.",
       },
       {
         name: 'Bank Account / Pay Elections',
-        reversibility: 'N/A — not synced from Workday',
-        payrollConsequence: 'CRITICAL — payment destination',
-        regulatoryExposure: 'Critical — PII and financial data transfer liability',
-        justification: "Bank details are entered directly in QuantapayAI by the employee. Syncing from Workday introduces PII transfer liability with zero trust benefit — the employee is the authoritative source.",
+        reversibility: 'N/A - not synced from Workday',
+        payrollConsequence: 'CRITICAL - payment destination',
+        regulatoryExposure: 'Critical - PII and financial data transfer liability',
+        justification: "Bank details are entered directly in QuantapayAI by the employee. Syncing from Workday introduces PII transfer liability with zero trust benefit - the employee is the authoritative source.",
       },
     ],
   },
@@ -161,7 +161,7 @@ export default function TrustGradient({ onFirstCardClick }) {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Trust Gradient</h2>
         <p className="text-sm text-muted mb-3">
-          Every write action is classified by reversibility, payroll consequence, and regulatory exposure — then routed to one of three tiers. <span className="text-primary font-medium">Click any action card to see the full reasoning.</span>
+          Every write action is classified by reversibility, payroll consequence, and regulatory exposure - then routed to one of three tiers. <span className="text-primary font-medium">Click any action card to see the full reasoning.</span>
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
@@ -191,7 +191,7 @@ export default function TrustGradient({ onFirstCardClick }) {
       </div>
 
       <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
-        <span className="font-medium text-dark">Design principle:</span> Every action where a wrong value could generate a payroll disbursement that cannot be recalled — salary, termination, worker type, cross-border relocation — is gated behind HR admin approval regardless of API confidence. Speed is not worth statutory exposure.
+        <span className="font-medium text-dark">Design principle:</span> Every action where a wrong value could generate a payroll disbursement that cannot be recalled - salary, termination, worker type, cross-border relocation - is gated behind HR admin approval regardless of API confidence. Speed is not worth statutory exposure.
       </div>
     </div>
   )

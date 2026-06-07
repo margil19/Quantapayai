@@ -123,18 +123,18 @@ function WelcomeModal({ onDismiss }) {
           Welcome to the QuantapayAI Integration Explorer
         </h2>
         <p className="text-sm text-muted leading-relaxed mb-5">
-          This is a PM take-home case study built as an interactive product — not a PDF.
+          This is a PM take-home case study built as an interactive product - not a PDF.
         </p>
         <p className="text-xs font-semibold text-dark uppercase tracking-wide mb-3">
           Here's how to navigate it:
         </p>
         <ol className="space-y-2.5 mb-6">
           {[
-            ['Part 1 — Data Flow', 'Click the trigger buttons to watch the integration run live'],
-            ['Part 2 — AI in the Integration Layer', "See where AI helps and where it shouldn't"],
-            ['Part 3 — Prioritization', 'Click each HRIS card to see the build / buy / partner decision'],
-            ['Part 4 — Error UX', 'Interact with the wireframes like a real product'],
-            ['Bonus — Health Dashboard', 'We went further — the dashboard every ops team needs'],
+            ['Part 1 - Data Flow', 'Click the trigger buttons to watch the integration run live'],
+            ['Part 2 - AI in the Integration Layer', "See where AI helps and where it shouldn't"],
+            ['Part 3 - Prioritization', 'Click each HRIS card to see the build / buy / partner decision'],
+            ['Part 4 - Error UX', 'Interact with the wireframes like a real product'],
+            ['Bonus - Health Dashboard', 'The dashboard every ops team needs - going beyond what was asked'],
           ].map(([title, desc], i) => (
             <li key={i} className="flex items-start gap-3 text-sm">
               <span className="text-primary font-semibold shrink-0 w-5 text-center">{CIRCLE[i]}</span>
@@ -148,7 +148,7 @@ function WelcomeModal({ onDismiss }) {
         </ol>
         <p className="text-xs text-muted mb-6 flex items-start gap-2 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
           <span className="shrink-0">ⓘ</span>
-          <span>Look for the ⓘ icon throughout — it shows the PM thinking behind every design decision.</span>
+          <span>Look for the ⓘ icon throughout - it shows the PM thinking behind every design decision.</span>
         </p>
         <button
           onClick={onDismiss}
@@ -288,7 +288,7 @@ export default function App() {
                   {part.bonus && (
                     <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activePart === part.id ? 'bg-accent' : 'bg-accent/60'}`} />
                   )}
-                  {part.available ? part.label : part.label + ' — Coming Soon'}
+                  {part.available ? part.label : part.label + ' - Coming Soon'}
                   {activePart === part.id && part.available && (
                     <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full ${part.bonus ? 'bg-accent' : 'bg-primary'}`} />
                   )}
@@ -308,7 +308,7 @@ export default function App() {
             </span>
             <h1 className="text-2xl font-bold text-dark mt-3 mb-2">Designing the Integration</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              How QuantapayAI connects to Workday HCM — covering trigger architecture, data normalization, trust-tier routing, and failure handling across a live payroll integration.
+              How QuantapayAI connects to Workday HCM - covering trigger architecture, data normalization, trust-tier routing, and failure handling across a live payroll integration.
             </p>
           </div>
           <div className="flex gap-8 mt-2">
@@ -358,7 +358,7 @@ export default function App() {
             </span>
             <h1 className="text-2xl font-bold text-dark mt-3 mb-2">AI in the Integration Layer</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              Where AI earns its place in this integration — and where it doesn't. AI reduces manual effort on low-stakes, high-volume tasks. It never touches the logic that determines compliance.
+              Where AI earns its place in this integration - and where it doesn't. AI reduces manual effort on low-stakes, high-volume tasks. It never touches the logic that determines compliance.
             </p>
           </div>
           <div className="flex gap-8 mt-2">
@@ -418,7 +418,7 @@ export default function App() {
             </span>
             <h1 className="text-2xl font-bold text-dark mt-3 mb-2">Prioritization</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              Which integrations to build, which to partner, and in what order — based on revenue already at risk, not predicted impact.
+              Which integrations to build, which to partner, and in what order - based on revenue already at risk, not predicted impact.
             </p>
           </div>
           <div className="flex gap-8 mt-2">
@@ -468,7 +468,7 @@ export default function App() {
             </span>
             <h1 className="text-2xl font-bold text-dark mt-3 mb-2">Error UX & Onboarding Wireframes</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              Two interactive product screens — how QuantapayAI surfaces a sync failure to an HR admin, and how field mapping is configured during onboarding. Both are clickable, not static.
+              Two interactive product screens - how QuantapayAI surfaces a sync failure to an HR admin, and how field mapping is configured during onboarding. Both are clickable, not static.
             </p>
           </div>
           <div className="flex gap-8 mt-2">
@@ -488,7 +488,7 @@ export default function App() {
                 <>
                   <Part4FieldMapping />
                   <NextNudge
-                    text="You've covered all 4 parts. We went further —"
+                    text="All 4 parts covered. There's a bonus section -"
                     dest="Bonus"
                     onClick={() => { handlePartSwitch('bonus'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                   />
@@ -505,12 +505,12 @@ export default function App() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-medium text-accent bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-                Bonus — we went further
+                Bonus
               </span>
             </div>
             <h1 className="text-2xl font-bold text-dark mb-2">Integration Health Dashboard</h1>
             <p className="text-sm text-muted max-w-2xl leading-relaxed">
-              Parts 1 through 4 answer what was asked. This goes further — because integrations aren't just built, they're operated.
+              Parts 1 through 4 answer what was asked. This goes further - because integrations aren't just built, they're operated.
             </p>
           </div>
           <BonusDashboard />

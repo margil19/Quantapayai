@@ -3,7 +3,7 @@ import { useState } from 'react'
 const DECISIONS = {
   BUILD: { label: 'Build', bg: 'bg-emerald-500', text: 'text-white', border: 'border-emerald-500', light: 'bg-emerald-50 border-emerald-200' },
   PARTNER: { label: 'Partner', bg: 'bg-teal-500', text: 'text-white', border: 'border-teal-500', light: 'bg-teal-50 border-teal-200' },
-  PARTNER_CAUTION: { label: 'Partner — with caution', bg: 'bg-amber-500 text-white', text: 'text-white', border: 'border-amber-500', light: 'bg-amber-50 border-amber-200' },
+  PARTNER_CAUTION: { label: 'Partner - with caution', bg: 'bg-amber-500 text-white', text: 'text-white', border: 'border-amber-500', light: 'bg-amber-50 border-amber-200' },
   BUY: { label: 'Buy', bg: 'bg-amber-400 text-dark', text: 'text-dark', border: 'border-amber-400', light: 'bg-amber-50 border-amber-200' },
 }
 
@@ -12,16 +12,16 @@ const ROWS = [
     hris: 'Workday',
     signal: '$1.4M ACV · 3 deals blocked · 41% of enterprise segment',
     decision: 'BUILD',
-    apiQuality: 'RAAS polling API — versioned, no native webhooks',
-    competitiveRisk: 'None — pure HRIS, no payroll overlap',
-    rationale: 'The highest revenue at risk in the backlog, with zero viable off-the-shelf alternatives. Workday\'s versioned API, complex field mapping surface, and compliance requirements mean no third-party connector handles this reliably. QuantapayAI needs full ownership of the mapping layer, trust tier routing, and failure handling. This is not a connector — it is the core integration.',
+    apiQuality: 'RAAS polling API - versioned, no native webhooks',
+    competitiveRisk: 'None - pure HRIS, no payroll overlap',
+    rationale: 'The highest revenue at risk in the backlog, with zero viable off-the-shelf alternatives. Workday\'s versioned API, complex field mapping surface, and compliance requirements mean no third-party connector handles this reliably. QuantapayAI needs full ownership of the mapping layer, trust tier routing, and failure handling. This is not a connector - it is the core integration.',
   },
   {
     hris: 'BambooHR',
     signal: '14 CS tickets · 28% of mid-market segment',
     decision: 'PARTNER',
     apiQuality: 'Clean REST API · webhooks supported · good documentation',
-    competitiveRisk: 'Low — HRIS only, no payroll overlap',
+    competitiveRisk: 'Low - HRIS only, no payroll overlap',
     rationale: '14 CS tickets is the loudest demand signal after Workday. But BambooHR\'s clean API means a middleware partner (Merge.dev or Finch) can cover 80% of the use case in weeks, not quarters. Ship a working connector via partner immediately to silence the CS noise, then evaluate native build after 6 months of usage data.',
   },
   {
@@ -29,24 +29,24 @@ const ROWS = [
     signal: '2 strategic accounts · 11% of current base',
     decision: 'PARTNER',
     apiQuality: 'Modern REST API · webhooks · strong developer experience',
-    competitiveRisk: 'Low — HRIS only',
-    rationale: 'Two customers doesn\'t justify native build investment at this stage. But "strategic" matters — these are likely reference accounts or expansion bets. A partner connector via Merge/Finch ships in 3 weeks and protects these accounts without burning eng cycles. Revisit if HiBob penetration grows to 10+ customers.',
+    competitiveRisk: 'Low - HRIS only',
+    rationale: 'Two customers doesn\'t justify native build investment at this stage. But "strategic" matters - these are likely reference accounts or expansion bets. A partner connector via Merge/Finch ships in 3 weeks and protects these accounts without burning eng cycles. Revisit if HiBob penetration grows to 10+ customers.',
   },
   {
     hris: 'Rippling',
     signal: '3 prospects · unproven segment',
     decision: 'PARTNER_CAUTION',
     apiQuality: 'Excellent API · real-time webhooks · modern stack',
-    competitiveRisk: 'HIGH — Rippling competes directly in payroll',
-    rationale: "Rippling's API quality makes this technically easy. The strategic complexity comes from Rippling competing directly in payroll — they have a financial incentive to make it harder for customers to route payroll elsewhere. As a vertically integrated platform, they control the data source. A partner connector via Merge limits QuantapayAI's exposure — if Rippling restricts API access for any reason, Merge absorbs that problem, not QuantapayAI's engineering team. Do not invest in a native Rippling build until the segment is proven and the risk profile is clearer.",
+    competitiveRisk: 'HIGH - Rippling competes directly in payroll',
+    rationale: "Rippling's API quality makes this technically easy. The strategic complexity comes from Rippling competing directly in payroll - they have a financial incentive to make it harder for customers to route payroll elsewhere. As a vertically integrated platform, they control the data source. A partner connector via Merge limits QuantapayAI's exposure - if Rippling restricts API access for any reason, Merge absorbs that problem, not QuantapayAI's engineering team. Do not invest in a native Rippling build until the segment is proven and the risk profile is clearer.",
   },
   {
     hris: 'Custom Proprietary HRIS',
     signal: '$900K · single deal',
     decision: 'BUY',
-    apiQuality: 'Unknown — proprietary, no standard API',
+    apiQuality: 'Unknown - proprietary, no standard API',
     competitiveRisk: 'None',
-    rationale: "First check if an existing connector can be bought or licensed from a systems integrator who has already worked with this company's proprietary system. If one exists, buy it — fast path to closing $900K. If nothing exists, do not build. A one-customer custom integration has zero reusability and becomes permanent maintenance debt. Walk away or renegotiate the deal terms.",
+    rationale: "First check if an existing connector can be bought or licensed from a systems integrator who has already worked with this company's proprietary system. If one exists, buy it - fast path to closing $900K. If nothing exists, do not build. A one-customer custom integration has zero reusability and becomes permanent maintenance debt. Walk away or renegotiate the deal terms.",
   },
 ]
 
@@ -63,7 +63,7 @@ export default function Part3BuildBuy({ onFirstCardClick }) {
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
           <p className="text-xs text-muted leading-relaxed">
-            Standard prioritization asks "what is most impactful?" Integration prioritization asks "what is most costly to delay?" Those are different questions with different answers. ACV alone doesn't decide sequence — revenue already at risk does.
+            Standard prioritization asks "what is most impactful?" Integration prioritization asks "what is most costly to delay?" Those are different questions with different answers. ACV alone doesn't decide sequence - revenue already at risk does.
           </p>
         </div>
       </div>

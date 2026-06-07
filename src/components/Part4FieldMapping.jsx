@@ -41,7 +41,7 @@ const INITIAL_ROWS = [
     locked: false,
     blockingGoLive: false,
     warningTitle: 'Format mismatch',
-    warningDetail: 'Workday sends this field as formatted text (e.g. "$92,000.00 USD"). QuantapayAI expects a plain number. We\'ll convert it automatically — confirm in preview that the conversion looks right.',
+    warningDetail: 'Workday sends this field as formatted text (e.g. "$92,000.00 USD"). QuantapayAI expects a plain number. Conversion happens automatically - confirm in preview that the result looks right.',
     workdaySent: '"$92,000.00 USD"',
     quantapayWillStore: '92000.00  (currency: USD)',
     correctOption: "Employee's annual salary",
@@ -57,7 +57,7 @@ const INITIAL_ROWS = [
     locked: false,
     blockingGoLive: false,
     correctOption: 'Employment type',
-    options: ['Employment type', 'Contractor category', 'Worker subtype — contingent', 'Engagement classification'],
+    options: ['Employment type', 'Contractor category', 'Worker subtype - contingent', 'Engagement classification'],
   },
   {
     id: 'reg_class',
@@ -69,18 +69,18 @@ const INITIAL_ROWS = [
     locked: false,
     blockingGoLive: false,
     correctOption: 'Regulatory role',
-    options: ['Regulatory role', 'Job grade level', 'Compliance tier', 'Risk classification — internal', 'Department sub-code'],
+    options: ['Regulatory role', 'Job grade level', 'Compliance tier', 'Risk classification - internal', 'Department sub-code'],
   },
   {
     id: 'schedule',
     workday: 'Work_Schedule_Code',
     mapsTo: '',
     confidence: 0,
-    sample: '—',
+    sample: 'N/A',
     status: 'blocked',
     locked: false,
     blockingGoLive: true,
-    blockedReason: 'Required for payroll — no matching Workday field found. Select a mapping below to unblock.',
+    blockedReason: 'Required for payroll - no matching Workday field found. Select a mapping below to unblock.',
     correctOption: 'Work schedule',
     options: ['Work schedule', 'Shift pattern', 'Hours classification', 'Attendance type'],
   },
@@ -109,7 +109,7 @@ const INITIAL_ROWS = [
   {
     id: 'bank',
     workday: 'Bank_Account',
-    mapsTo: '— not synced from Workday',
+    mapsTo: '- not synced from Workday',
     confidence: null,
     sample: '***',
     status: 'locked',
@@ -133,7 +133,7 @@ function statusStyle(status) {
   if (status === 'amber')     return { row: 'border-l-4 border-l-amber-400 bg-white',           badge: 'bg-amber-100 text-amber-700',   label: 'Needs review' }
   if (status === 'red')       return { row: 'border-l-4 border-l-red-400 bg-white',             badge: 'bg-red-100 text-red-700',       label: 'Unmapped' }
   if (status === 'blocked')   return { row: 'border-l-4 border-l-red-600 bg-red-50/30',         badge: 'bg-red-600 text-white',         label: 'Blocking' }
-  if (status === 'locked')    return { row: 'bg-gray-50 border-l-4 border-l-gray-200',          badge: 'bg-gray-100 text-gray-500',     label: 'PII — locked' }
+  if (status === 'locked')    return { row: 'bg-gray-50 border-l-4 border-l-gray-200',          badge: 'bg-gray-100 text-gray-500',     label: 'PII - locked' }
   return { row: 'bg-white', badge: 'bg-gray-100 text-gray-500', label: '' }
 }
 
@@ -172,7 +172,7 @@ function FieldRow({ row, onConfirm }) {
           ) : row.status === 'auto' ? (
             <span className="text-xs font-mono text-gray-600">{row.mapsTo}</span>
           ) : (
-            <span className="text-xs text-gray-400 italic">{row.mapsTo || '— select mapping'}</span>
+            <span className="text-xs text-gray-400 italic">{row.mapsTo || '- select mapping'}</span>
           )}
         </td>
         <td className="px-4 py-3">
@@ -180,7 +180,7 @@ function FieldRow({ row, onConfirm }) {
             <span className="text-emerald-500 text-sm font-bold">✓</span>
           ) : row.confidence !== null ? (
             <span className={`text-xs font-medium ${row.confidence >= 90 ? 'text-emerald-600' : row.confidence >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
-              {row.confidence > 0 ? `${row.confidence}%` : '—'}
+              {row.confidence > 0 ? `${row.confidence}%` : '-'}
             </span>
           ) : (
             <span className="text-xs text-gray-300">N/A</span>
@@ -220,7 +220,7 @@ function FieldRow({ row, onConfirm }) {
                       value={selected}
                       onChange={e => setSelected(e.target.value)}
                     >
-                      <option value="">— choose mapping —</option>
+                      <option value="">- choose mapping -</option>
                       {row.options.map(o => <option key={o}>{o}</option>)}
                     </select>
                     <button
@@ -233,12 +233,12 @@ function FieldRow({ row, onConfirm }) {
                   </div>
                   {isCorrectSelection && (
                     <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                      ✓ Looks right — this maps correctly to the field QuantapayAI expects.
+                      ✓ Looks right - this maps correctly to the field QuantapayAI expects.
                     </p>
                   )}
                   {isWrongSelection && (
                     <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                      ⚠ This may not be the right match — check your Workday field definitions before confirming.
+                      ⚠ This may not be the right match - check your Workday field definitions before confirming.
                     </p>
                   )}
                 </div>
@@ -260,7 +260,7 @@ function FieldRow({ row, onConfirm }) {
                       value={selected}
                       onChange={e => setSelected(e.target.value)}
                     >
-                      <option value="">— choose mapping —</option>
+                      <option value="">- choose mapping -</option>
                       {row.options.map(o => <option key={o}>{o}</option>)}
                     </select>
                     <button
@@ -273,12 +273,12 @@ function FieldRow({ row, onConfirm }) {
                   </div>
                   {isCorrectSelection && (
                     <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                      ✓ Looks right — this maps correctly to the field QuantapayAI expects.
+                      ✓ Looks right - this maps correctly to the field QuantapayAI expects.
                     </p>
                   )}
                   {isWrongSelection && (
                     <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                      ⚠ This may not be the right match — check your Workday field definitions before confirming.
+                      ⚠ This may not be the right match - check your Workday field definitions before confirming.
                     </p>
                   )}
                 </div>
@@ -346,7 +346,7 @@ function PreviewModal({ rows, onClose }) {
             Edit mappings
           </button>
           <button onClick={onClose} className="text-sm font-semibold bg-blue-600 text-white rounded-xl px-5 py-2 hover:bg-blue-700 transition-colors">
-            Looks good — continue
+            Looks good - continue
           </button>
         </div>
       </div>
@@ -377,13 +377,13 @@ export default function Part4FieldMapping() {
       <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
         <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
         <p className="text-xs text-muted leading-relaxed">
-          "Go Live" is intentionally absent from this screen. It only appears after the admin has previewed the mapping against real employee data — preventing misconfigured fields from going live silently. Blocking rows (⛔) must be resolved before Go Live unlocks.
+          "Go Live" is intentionally absent from this screen. It only appears after the admin has previewed the mapping against real employee data - preventing misconfigured fields from going live silently. Blocking rows (⛔) must be resolved before Go Live unlocks.
         </p>
       </div>
 
       <div className="bg-[#f5f6fa] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
 
-        {/* Mock product nav — no step indicator */}
+        {/* Mock product nav - no step indicator */}
         <div className="bg-[#0f172a] px-6 py-3 flex items-center gap-2">
           <span className="text-white text-sm font-semibold">QuantapayAI</span>
           <span className="text-slate-500 text-sm">|</span>
@@ -409,11 +409,11 @@ export default function Part4FieldMapping() {
           <span className="ml-auto">
             {allResolved ? (
               <span className="text-xs bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full font-medium">
-                ✓ All fields mapped — ready to preview
+                ✓ All fields mapped - ready to preview
               </span>
             ) : (
               <span className="text-xs bg-red-50 border border-red-200 text-red-700 px-2.5 py-1 rounded-full font-medium">
-                ⛔ 1 blocking issue — Go Live unavailable
+                ⛔ 1 blocking issue - Go Live unavailable
               </span>
             )}
           </span>
@@ -426,7 +426,7 @@ export default function Part4FieldMapping() {
             { color: 'bg-amber-400',   label: 'Needs review (60–90%)' },
             { color: 'bg-red-400',     label: 'Unmapped' },
             { color: 'bg-red-600',     label: 'Blocking' },
-            { color: 'bg-gray-300',    label: 'PII — locked 🔒' },
+            { color: 'bg-gray-300',    label: 'PII - locked 🔒' },
           ].map(l => (
             <span key={l.label} className="flex items-center gap-1.5 text-xs text-muted">
               <span className={`w-2.5 h-2.5 rounded-sm ${l.color}`} />
@@ -451,7 +451,7 @@ export default function Part4FieldMapping() {
           </table>
         </div>
 
-        {/* Bottom actions — no Back button */}
+        {/* Bottom actions - no Back button */}
         <div className="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-end gap-3 flex-wrap">
           {savedLater ? (
             <span className="text-xs text-emerald-600 font-medium">✓ Progress saved</span>

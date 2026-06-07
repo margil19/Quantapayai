@@ -7,19 +7,19 @@ const STAGES = [
     id: 'workday',
     label: 'Workday HCM',
     icon: '⬡',
-    tooltip: 'Where all employee data lives. QuantapayAI checks Workday regularly to see if anything has changed — like a new hire, a salary update, or someone leaving.',
+    tooltip: 'Where all employee data lives. QuantapayAI checks Workday regularly to see if anything has changed - like a new hire, a salary update, or someone leaving.',
   },
   {
     id: 'sync',
     label: 'Sync Engine',
     icon: '⟳',
-    tooltip: 'The part that keeps track of what was last checked. If something goes wrong mid-sync, it picks up exactly where it left off — nothing gets missed or double-counted.',
+    tooltip: 'The part that keeps track of what was last checked. If something goes wrong mid-sync, it picks up exactly where it left off - nothing gets missed or double-counted.',
   },
   {
     id: 'normalize',
     label: 'Normalization Layer',
     icon: '≡',
-    tooltip: 'Workday and QuantapayAI speak slightly different "languages." This layer translates the data into a standard format both systems understand — like converting a date from "July 1st 2025" to a consistent format every system can read.',
+    tooltip: 'Workday and QuantapayAI speak slightly different "languages." This layer translates the data into a standard format both systems understand - like converting a date from "July 1st 2025" to a consistent format every system can read.',
   },
   {
     id: 'trust',
@@ -31,7 +31,7 @@ const STAGES = [
     id: 'quantapay',
     label: 'QuantapayAI',
     icon: '◈',
-    tooltip: 'The final destination. Approved changes land here and update payroll. If the same change is sent twice by mistake, the system recognises it and ignores the duplicate — no double entries.',
+    tooltip: 'The final destination. Approved changes land here and update payroll. If the same change is sent twice by mistake, the system recognises it and ignores the duplicate - no double entries.',
   },
 ]
 
@@ -42,10 +42,10 @@ const TRIGGERS = {
     bgLight: 'bg-emerald-50 border-emerald-200',
     employee: 'Sarah Chen',
     details: [
-      { stage: 'workday', value: 'Sarah Chen joined Engineering, starting July 1 2025. Workday has her details — name, department, start date, and location.' },
-      { stage: 'sync', value: 'QuantapayAI spotted the new record on its regular check. Nothing was missed — it knows exactly where it left off.' },
-      { stage: 'normalize', value: "Sarah's details are translated into QuantapayAI's format — name, start date, and work country all standardised and ready to use." },
-      { stage: 'trust', value: "Basic info (name, ID) goes through automatically — it's safe and easy to fix if wrong. Her start date and location need HR sign-off since they affect her first paycheck." },
+      { stage: 'workday', value: 'Sarah Chen joined Engineering, starting July 1 2025. Workday has her details - name, department, start date, and location.' },
+      { stage: 'sync', value: 'QuantapayAI spotted the new record on its regular check. Nothing was missed - it knows exactly where it left off.' },
+      { stage: 'normalize', value: "Sarah's details are translated into QuantapayAI's format - name, start date, and work country all standardised and ready to use." },
+      { stage: 'trust', value: "Basic info (name, ID) goes through automatically - it's safe and easy to fix if wrong. Her start date and location need HR sign-off since they affect her first paycheck." },
       { stage: 'quantapay', value: "Sarah's profile is created. Her start date is sitting in the approval queue waiting for HR. If this somehow runs twice, the duplicate is automatically blocked." },
     ],
   },
@@ -58,7 +58,7 @@ const TRIGGERS = {
       { stage: 'workday', value: "Marcus Lee's salary was updated to $112,000, effective July 1 2025. The change is sitting in Workday waiting to be picked up." },
       { stage: 'sync', value: "QuantapayAI noticed the change on its next check. It flagged this as time-sensitive because the effective date falls within the current pay cycle." },
       { stage: 'normalize', value: "The salary is converted from the raw Workday format (\"$112,000.00 USD\") into clean numbers QuantapayAI can work with: 112000.00 in USD." },
-      { stage: 'trust', value: "Salary changes always require HR approval — getting this wrong means someone is over or underpaid, which can have legal consequences in many countries." },
+      { stage: 'trust', value: "Salary changes always require HR approval - getting this wrong means someone is over or underpaid, which can have legal consequences in many countries." },
       { stage: 'quantapay', value: "The change is held in a queue. HR has been notified and needs to approve before the payroll deadline on Jun 25. Nothing is updated until they do." },
     ],
   },
@@ -68,10 +68,10 @@ const TRIGGERS = {
     bgLight: 'bg-red-50 border-red-200',
     employee: 'Jordan Park',
     details: [
-      { stage: 'workday', value: "Jordan Park's last day is June 14 2025 — a voluntary resignation. Workday has the termination date and reason recorded." },
-      { stage: 'sync', value: "QuantapayAI picked up the termination. Because it falls within the current pay period, it was immediately flagged as urgent — a clock is now ticking." },
+      { stage: 'workday', value: "Jordan Park's last day is June 14 2025 - a voluntary resignation. Workday has the termination date and reason recorded." },
+      { stage: 'sync', value: "QuantapayAI picked up the termination. Because it falls within the current pay period, it was immediately flagged as urgent - a clock is now ticking." },
       { stage: 'normalize', value: "The leaving date and reason are translated into QuantapayAI's format. This automatically kicks off the final pay calculation workflow." },
-      { stage: 'trust', value: "Terminations always require HR approval — no exceptions. Final pay, any severance, and benefits cutoff are all on the line. This can never happen automatically." },
+      { stage: 'trust', value: "Terminations always require HR approval - no exceptions. Final pay, any severance, and benefits cutoff are all on the line. This can never happen automatically." },
       { stage: 'quantapay', value: "The termination is queued for HR approval with a clear deadline. If no action is taken within 48 hours, it escalates to the HR Manager automatically." },
     ],
   },
@@ -99,16 +99,16 @@ function DesignChip() {
             <tbody className="text-gray-600">
               <tr className="border-b border-gray-100">
                 <td className="py-2.5 pr-4 font-medium text-dark align-top">Why polling?</td>
-                <td className="py-2.5 align-top">Workday doesn't push data to us automatically. So we check Workday every 15 minutes and ask what changed. This is called polling. It works on every Workday tenant without any setup from the customer.</td>
+                <td className="py-2.5 align-top">Workday doesn't push data automatically. QuantapayAI polls every 15 minutes to check what changed. This is called polling. It works on every Workday tenant without any setup from the customer.</td>
               </tr>
               <tr>
                 <td className="py-2.5 pr-4 font-medium text-dark align-top">Does Workday support webhooks?</td>
-                <td className="py-2.5 align-top">Yes — but only through a tool called Workday Studio, which requires a certified Workday developer on the customer's side to configure. It's not available on every tenant and varies by version. For customers who have it set up, it means near real-time updates instead of 15-minute polling. It's an upgrade, not the default.</td>
+                <td className="py-2.5 align-top">Yes - but only through a tool called Workday Studio, which requires a certified Workday developer on the customer's side to configure. It's not available on every tenant and varies by version. For customers who have it set up, it means near real-time updates instead of 15-minute polling. It's an upgrade, not the default.</td>
               </tr>
             </tbody>
           </table>
           <p className="mt-3 pt-2.5 border-t border-gray-200 text-gray-500 leading-relaxed">
-            BambooHR, HiBob, and Rippling support webhooks natively — they push data to us the moment something changes, with no polling needed.
+            BambooHR, HiBob, and Rippling support webhooks natively - they push data to us the moment something changes, with no polling needed.
           </p>
         </span>
       )}
@@ -123,7 +123,7 @@ export default function DataFlow({ onFirstTrigger }) {
   const [hoveredStage, setHoveredStage] = useState(null)
   const [triggerFiredOnce, setTriggerFiredOnce] = useState(false)
 
-  // CHANGE 4 — trigger hint banner (first session only)
+  // CHANGE 4 - trigger hint banner (first session only)
   const [showTriggerHint, setShowTriggerHint] = useState(
     () => !localStorage.getItem(LS_TRIGGER_HINT)
   )
@@ -170,11 +170,11 @@ export default function DataFlow({ onFirstTrigger }) {
         <DesignChip />
       </div>
 
-      {/* CHANGE 4 — first-visit trigger hint */}
+      {/* CHANGE 4 - first-visit trigger hint */}
       {showTriggerHint && (
         <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 -mt-2">
           <p className="text-xs text-amber-800 leading-relaxed">
-            👇 <span className="font-semibold">Start here</span> — click <em>New Hire</em>, <em>Salary Change</em>, or <em>Termination</em> to watch the integration run in real time.
+            👇 <span className="font-semibold">Start here</span> - click <em>New Hire</em>, <em>Salary Change</em>, or <em>Termination</em> to watch the integration run in real time.
           </p>
           <button
             onClick={dismissTriggerHint}
@@ -224,7 +224,7 @@ export default function DataFlow({ onFirstTrigger }) {
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
 
-                {/* Stage box — fixed height always, never resizes */}
+                {/* Stage box - fixed height always, never resizes */}
                 <div
                   key={`${stage.id}-${active ?? 'none'}`}
                   className={`flex-1 min-w-0 h-20 rounded-xl border-2 select-none transition-colors duration-300 flex flex-col items-center justify-center gap-1 px-1 cursor-default ${
@@ -285,7 +285,7 @@ export default function DataFlow({ onFirstTrigger }) {
         </div>
       </div>
 
-      {/* Hover description panel — outside overflow container so it never clips */}
+      {/* Hover description panel - outside overflow container so it never clips */}
       <div className="min-h-[56px] -mt-4">
         {hoveredStage !== null ? (
           <div
@@ -309,7 +309,7 @@ export default function DataFlow({ onFirstTrigger }) {
               {active}
             </span>
             <span className={`text-sm font-medium ${currentData?.textColor}`}>
-              {currentData?.employee} — pipeline complete
+              {currentData?.employee} - pipeline complete
             </span>
           </div>
           <div className="space-y-1">

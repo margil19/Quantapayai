@@ -19,20 +19,20 @@ const GAPS = [
   },
   {
     dataPoint: 'Does an existing connector already cover this HRIS?',
-    why: "The Custom HRIS at position 4 requires an immediate lookup — does an off-the-shelf connector already exist for this system? This is a hours-long research task, not a build decision.",
-    shift: "If a connector exists, buy it — deal closes fast. If nothing exists, do not build. Walk away or renegotiate the deal terms entirely.",
+    why: "The Custom HRIS at position 4 requires an immediate lookup - does an off-the-shelf connector already exist for this system? This is a hours-long research task, not a build decision.",
+    shift: "If a connector exists, buy it - deal closes fast. If nothing exists, do not build. Walk away or renegotiate the deal terms entirely.",
     affects: 'Position 4 resolution',
   },
   {
     dataPoint: 'Do any of the 3 Rippling prospects actually convert?',
-    why: "Do any of the 3 prospects have Rippling integration as a hard requirement to sign? The bigger question is whether the segment is real at all — 3 prospects who haven't committed is the thinnest signal in the backlog.",
+    why: "Do any of the 3 prospects have Rippling integration as a hard requirement to sign? The bigger question is whether the segment is real at all - 3 prospects who haven't committed is the thinnest signal in the backlog.",
     shift: "If prospects convert without needing a native build, Partner via Merge is confirmed as sufficient. If prospects require native and Rippling has a formal partner program with API stability guarantees, native build moves up the priority stack.",
     affects: 'Rippling decision',
   },
   {
     dataPoint: 'Engineering capacity & Workday build estimate',
     why: 'A production-grade Workday integration is complex. The actual eng estimate affects how much parallel work is realistic.',
-    shift: 'If the Workday estimate is 20+ weeks, the case for shipping BambooHR and HiBob via partner in parallel — not sequentially — gets much stronger.',
+    shift: 'If the Workday estimate is 20+ weeks, the case for shipping BambooHR and HiBob via partner in parallel - not sequentially - gets much stronger.',
     affects: 'Overall sequence pacing',
   },
 ]
@@ -43,12 +43,12 @@ export default function Part3DataGaps() {
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">What Data Would Change This</h2>
         <p className="text-sm text-muted mb-3">
-          The sequence above is defensible with current information. These are the six gaps that could shift it — and how. The first two weeks before any eng work starts should be spent pulling these answers.
+          The sequence above is defensible with current information. These are the six gaps that could shift it - and how. The first two weeks before any eng work starts should be spent pulling these answers.
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
           <p className="text-xs text-muted leading-relaxed">
-            A prioritization framework is only as good as the data it runs on. Naming the gaps upfront is a PM discipline — it separates a defensible starting position from false certainty.
+            A prioritization framework is only as good as the data it runs on. Naming the gaps upfront is a PM discipline - it separates a defensible starting position from false certainty.
           </p>
         </div>
       </div>

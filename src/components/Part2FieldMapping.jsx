@@ -5,12 +5,18 @@ const FIELDS = [
   { workday: 'Legal_Name_First', quantapay: 'legal_first_name', confidence: 97, sample: 'Sarah', status: 'auto' },
   { workday: 'Legal_Name_Last', quantapay: 'legal_last_name', confidence: 96, sample: 'Chen', status: 'auto' },
   { workday: 'Hire_Date', quantapay: 'employment_start_date', confidence: 94, sample: '2025-07-01', status: 'auto' },
-  { workday: 'Annual_Base_Salary', quantapay: 'annual_salary_amount', confidence: 88, sample: '$112,000.00 USD', status: 'suggested' },
-  { workday: 'Worker_Type', quantapay: 'employment_classification', confidence: 79, sample: 'Employee', status: 'suggested' },
-  { workday: 'Work_Location_Country', quantapay: 'work_country', confidence: 72, sample: 'United States', status: 'suggested' },
-  { workday: 'Termination_Date', quantapay: 'termination_date', confidence: 55, sample: '—', status: 'flagged' },
-  { workday: 'Cost_Center_Reference', quantapay: 'cost_center_id', confidence: 41, sample: 'CC-1042-ENG', status: 'flagged' },
-  { workday: 'Custom_Attr_EOR_Flag', quantapay: null, confidence: 0, sample: 'TRUE', status: 'unknown' },
+  { workday: 'Annual_Base_Salary', quantapay: 'annual_salary_amount', confidence: 88, sample: '$112,000.00 USD', status: 'suggested',
+    correctOption: 'annual_salary_amount', options: ['annual_salary_amount', 'total_compensation', 'base_pay_rate', 'bonus_amount'] },
+  { workday: 'Worker_Type', quantapay: 'employment_classification', confidence: 79, sample: 'Employee', status: 'suggested',
+    correctOption: 'employment_classification', options: ['employment_classification', 'worker_category', 'contract_type', 'worker_status'] },
+  { workday: 'Work_Location_Country', quantapay: 'work_country', confidence: 72, sample: 'United States', status: 'suggested',
+    correctOption: 'work_country', options: ['work_country', 'home_country', 'tax_jurisdiction', 'office_location'] },
+  { workday: 'Termination_Date', quantapay: 'termination_date', confidence: 55, sample: '—', status: 'flagged',
+    correctOption: 'termination_date', options: ['termination_date', 'last_working_day', 'contract_end_date', 'benefits_end_date'] },
+  { workday: 'Cost_Center_Reference', quantapay: 'cost_center_id', confidence: 41, sample: 'CC-1042-ENG', status: 'flagged',
+    correctOption: 'cost_center_id', options: ['cost_center_id', 'department_id', 'cost_allocation_code', 'gl_account'] },
+  { workday: 'Custom_Attr_EOR_Flag', quantapay: null, confidence: 0, sample: 'TRUE', status: 'unknown',
+    correctOption: 'eor_flag', options: ['eor_flag', 'custom_attribute_1', 'compliance_flag', '— skip this field —'] },
 ]
 
 const MANUAL_FIELDS_SIMPLE = [
@@ -77,6 +83,7 @@ function rowBorder(status, overridden) {
 export default function Part2FieldMapping({ onFirstCardClick }) {
   const [confirmedFlash, setConfirmedFlash] = useState(false)
   const [callbackFired, setCallbackFired] = useState(false)
+  const [selections, setSelections] = useState({})
 
   const fireCallback = () => {
     if (!callbackFired && onFirstCardClick) {
@@ -159,17 +166,39 @@ export default function Part2FieldMapping({ onFirstCardClick }) {
           <div className="p-4">
             <div className="space-y-1.5">
               {FIELDS.map((f) => {
-                const badge = confidenceBadge(f.confidence, f.status)
-                const borderCls = rowBorder(f.status, false)
+                const sel = selections[f.workday]
+                const isResolved = sel && f.correctOption && sel === f.correctOption
+                const badge = isResolved
+                  ? { bg: 'bg-emerald-100 text-emerald-700', label: '100%' }
+                  : confidenceBadge(f.confidence, f.status)
+                const borderCls = isResolved
+                  ? 'border-l-4 border-l-emerald-500 bg-emerald-50/30'
+                  : rowBorder(f.status, false)
+
                 return (
-                  <div key={f.workday} className={`rounded-lg border border-gray-100 px-3 py-2 ${borderCls}`}>
+                  <div key={f.workday} className={`rounded-lg border border-gray-100 px-3 py-2 transition-all duration-300 ${borderCls}`}>
                     <div className="flex items-center gap-2 text-xs min-w-0">
                       <span className="font-mono text-gray-700 w-36 shrink-0 truncate">{f.workday}</span>
                       <span className="text-gray-300 shrink-0">→</span>
-                      <span className="flex-1 font-mono text-gray-600 text-xs truncate">
-                        {f.quantapay ?? <span className="text-gray-300 italic">no match found</span>}
+                      {f.options ? (
+                        <select
+                          className={`flex-1 text-xs rounded px-1.5 py-1 min-w-0 transition-colors duration-200 ${
+                            isResolved
+                              ? 'border border-emerald-300 bg-emerald-50 text-emerald-700 font-medium'
+                              : 'border border-amber-200 bg-white text-dark'
+                          }`}
+                          value={sel ?? ''}
+                          onChange={e => setSelections(prev => ({ ...prev, [f.workday]: e.target.value }))}
+                        >
+                          <option value="">— choose mapping —</option>
+                          {f.options.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      ) : (
+                        <span className="flex-1 font-mono text-gray-600 text-xs truncate">{f.quantapay}</span>
+                      )}
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 transition-all duration-300 ${badge.bg}`}>
+                        {badge.label}
                       </span>
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 ${badge.bg}`}>{badge.label}</span>
                     </div>
                   </div>
                 )

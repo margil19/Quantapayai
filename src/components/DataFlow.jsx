@@ -294,6 +294,8 @@ export default function DataFlow({ onFirstTrigger }) {
         </div>
       </div>
 
+      <p className="text-center text-xs text-gray-400 italic -mt-4">Hover over any stage to see what it does</p>
+
       {/* Active event summary */}
       {active && activeStage === STAGES.length - 1 && (
         <div className={`rounded-xl border p-4 ${currentData?.bgLight}`}>

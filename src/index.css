@@ -38,3 +38,26 @@
   animation: info-pulse 1.4s ease-in-out infinite;
   border-color: #714dff !important;
 }
+
+/* DataFlow pipeline — traveling pulse dot on arrow connectors */
+@keyframes arrow-travel {
+  0%        { transform: translateX(-300%); opacity: 0; }
+  15%       { opacity: 1; }
+  85%       { opacity: 1; }
+  100%      { transform: translateX(400%); opacity: 0; }
+}
+
+/* DataFlow pipeline — one-shot glow as each box is reached */
+@keyframes box-glow-arrive {
+  0%   { box-shadow: 0 0 0 0 rgba(113, 77, 255, 0); }
+  25%  { box-shadow: 0 0 20px 8px rgba(113, 77, 255, 0.35); }
+  100% { box-shadow: 0 0 8px 3px rgba(113, 77, 255, 0.08); }
+}
+
+/* DataFlow pipeline — slow heartbeat loop after all stages complete */
+@keyframes arrow-heartbeat {
+  0%        { transform: translateX(-300%); opacity: 0; }
+  5%        { opacity: 0.65; }
+  20%       { transform: translateX(400%); opacity: 0.65; }
+  25%, 100% { transform: translateX(400%); opacity: 0; }
+}

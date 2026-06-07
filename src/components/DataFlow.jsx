@@ -120,6 +120,7 @@ export default function DataFlow({ onFirstTrigger }) {
   const [active, setActive] = useState(null)
   const [animating, setAnimating] = useState(false)
   const [activeStage, setActiveStage] = useState(-1)
+  const [looping, setLooping] = useState(false)
   const [tooltip, setTooltip] = useState(null)
   const [triggerFiredOnce, setTriggerFiredOnce] = useState(false)
 
@@ -141,8 +142,8 @@ export default function DataFlow({ onFirstTrigger }) {
     setActive(name)
     setAnimating(true)
     setActiveStage(0)
+    setLooping(false)
 
-    const data = TRIGGERS[name]
     let step = 0
     const interval = setInterval(() => {
       step++
@@ -150,6 +151,7 @@ export default function DataFlow({ onFirstTrigger }) {
         clearInterval(interval)
         setAnimating(false)
         setActiveStage(STAGES.length - 1)
+        setLooping(true)
       } else {
         setActiveStage(step)
       }
@@ -205,7 +207,7 @@ export default function DataFlow({ onFirstTrigger }) {
         ))}
         {active && (
           <button
-            onClick={() => { setActive(null); setActiveStage(-1); setAnimating(false) }}
+            onClick={() => { setActive(null); setActiveStage(-1); setAnimating(false); setLooping(false) }}
             className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-muted hover:text-dark transition-colors"
           >
             Reset
@@ -217,46 +219,86 @@ export default function DataFlow({ onFirstTrigger }) {
       <div className="relative overflow-x-auto pb-2">
         <div className="flex items-center gap-0 min-w-[700px]">
           {STAGES.map((stage, i) => {
-            const isActive = activeStage === i
-            const isPast = activeStage > i
+            const isActive  = activeStage === i && animating
+            const isPast    = activeStage > i || (active && !animating && activeStage >= 0)
+            const arrowLit  = activeStage > i || (active && !animating && activeStage >= 0)
+            const arrowPulsing = activeStage === i && animating  // dot traveling to next stage
 
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
+                {/* Stage box */}
                 <div
-                  className={`flex-1 min-w-0 rounded-xl border-2 transition-all duration-500 cursor-pointer select-none ${
-                    isActive
-                      ? 'border-primary bg-purple-50 shadow-md shadow-primary/10'
-                      : isPast
-                      ? 'border-purple-200 bg-purple-50/40'
+                  key={`${stage.id}-${active ?? 'none'}`}
+                  className={`flex-1 min-w-0 rounded-xl border-2 cursor-pointer select-none transition-colors duration-300 ${
+                    isActive || isPast
+                      ? isPast && !isActive
+                        ? 'border-primary bg-purple-50/40'
+                        : 'border-primary bg-purple-50'
                       : 'border-gray-200 bg-white'
                   }`}
+                  style={
+                    isActive
+                      ? { animation: 'box-glow-arrive 1s ease-out forwards' }
+                      : isPast
+                      ? { boxShadow: '0 0 6px 2px rgba(113,77,255,0.07)' }
+                      : {}
+                  }
                   onMouseEnter={() => setTooltip(stage.id)}
                   onMouseLeave={() => setTooltip(null)}
                 >
                   <div className="p-4">
-                    <div className={`text-xl mb-2 transition-colors ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
+                    <div className={`text-xl mb-2 transition-colors duration-300 ${isActive || isPast ? (isActive ? 'text-primary' : 'text-purple-400') : 'text-gray-300'}`}>
                       {stage.icon}
                     </div>
-                    <div className={`text-xs font-semibold mb-1 transition-colors ${isActive ? 'text-primary' : 'text-dark'}`}>
+                    <div className={`text-xs font-semibold mb-1 transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-dark' : 'text-dark'}`}>
                       {stage.label}
                     </div>
                     {tooltip === stage.id && (
-                      <div className="text-xs text-muted leading-relaxed mt-1 border-t border-gray-100 pt-2">
+                      <div className="text-xs text-muted leading-relaxed mt-1 border-t border-gray-100 pt-2 transition-opacity duration-300">
                         {stage.tooltip}
                       </div>
                     )}
-                    {isPast && (
-                      <div className="text-xs mt-1 text-purple-400">✓ processed</div>
-                    )}
+                    <div className={`text-xs mt-1 text-purple-400 transition-opacity duration-300 ${isPast && !isActive ? 'opacity-100' : 'opacity-0 select-none pointer-events-none'}`}>
+                      ✓ processed
+                    </div>
                   </div>
                 </div>
+
+                {/* Arrow connector */}
                 {i < STAGES.length - 1 && (
-                  <div className={`w-8 flex-shrink-0 flex items-center justify-center transition-colors duration-500 ${
-                    activeStage > i ? 'text-primary' : 'text-gray-200'
-                  }`}>
+                  <div className="w-8 flex-shrink-0 relative flex items-center justify-center">
                     <svg width="24" height="12" viewBox="0 0 24 12" fill="none">
-                      <path d="M0 6H20M20 6L14 1M20 6L14 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M0 6H20M20 6L14 1M20 6L14 11"
+                        stroke={arrowLit ? '#714dff' : '#e5e7eb'}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transition: 'stroke 0.3s' }}
+                      />
                     </svg>
+                    {/* Traveling pulse dot */}
+                    <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none">
+                      {arrowPulsing && (
+                        <div
+                          className="w-2 h-2 rounded-full bg-primary shrink-0"
+                          style={{
+                            boxShadow: '0 0 8px 3px rgba(113,77,255,0.55)',
+                            animation: 'arrow-travel 0.55s linear forwards',
+                          }}
+                        />
+                      )}
+                      {looping && !arrowPulsing && (
+                        <div
+                          className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"
+                          style={{
+                            boxShadow: '0 0 5px 2px rgba(113,77,255,0.4)',
+                            animation: 'arrow-heartbeat 2s linear infinite',
+                            animationDelay: `${i * 0.5}s`,
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

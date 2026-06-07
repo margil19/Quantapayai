@@ -117,13 +117,18 @@ const TIERS = [
 ]
 
 
-function ActionCard({ action, tier, onFirstCardClick }) {
+function ActionCard({ action, tier, onFirstCardClick, showBubble, onBubbleDismiss }) {
   const [open, setOpen] = useState(false)
   return (
     <div
-      className={`border rounded-xl p-3 cursor-pointer transition-all duration-200 ${tier.cardBorder} ${open ? 'bg-gray-50' : 'bg-white hover:bg-gray-50/60'}`}
-      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick() }}
+      className={`border rounded-xl p-3 cursor-pointer transition-all duration-200 relative ${tier.cardBorder} ${open ? 'bg-gray-50' : 'bg-white hover:bg-gray-50/60'}`}
+      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick(); if (showBubble) onBubbleDismiss() }}
     >
+      {showBubble && (
+        <span className="absolute -top-2 -right-2 flex items-center gap-1 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm z-10 animate-pulse pointer-events-none">
+          tap to expand
+        </span>
+      )}
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium ${tier.badgeBg} px-2 py-0.5 rounded-full`}>
           {action.name}
@@ -156,12 +161,13 @@ function ActionCard({ action, tier, onFirstCardClick }) {
 
 
 export default function TrustGradient({ onFirstCardClick }) {
+  const [bubbleDismissed, setBubbleDismissed] = useState(false)
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Trust Gradient</h2>
         <p className="text-sm text-muted mb-3">
-          Every write action is classified by reversibility, payroll consequence, and regulatory exposure - then routed to one of three tiers. <span className="text-primary font-medium">Click any action card to see the full reasoning.</span>
+          Every write action is classified by reversibility, payroll consequence, and regulatory exposure - then routed to one of three tiers. <span className="text-gray-400 font-medium">Click any action card to see the full reasoning.</span>
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
@@ -182,8 +188,15 @@ export default function TrustGradient({ onFirstCardClick }) {
               <p className={`text-xs ${tier.headerText} opacity-70`}>{tier.sublabel}</p>
             </div>
             <div className="space-y-2">
-              {tier.actions.map((action) => (
-                <ActionCard key={action.name} action={action} tier={tier} onFirstCardClick={onFirstCardClick} />
+              {tier.actions.map((action, ai) => (
+                <ActionCard
+                  key={action.name}
+                  action={action}
+                  tier={tier}
+                  onFirstCardClick={onFirstCardClick}
+                  showBubble={!bubbleDismissed && tier.id === TIERS[0].id && ai === 0}
+                  onBubbleDismiss={() => setBubbleDismissed(true)}
+                />
               ))}
             </div>
           </div>

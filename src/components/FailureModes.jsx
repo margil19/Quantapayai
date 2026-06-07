@@ -51,15 +51,20 @@ const FAILURE_MODES = [
 ]
 
 
-function FMCard({ fm, onFirstCardClick }) {
+function FMCard({ fm, onFirstCardClick, showBubble, onBubbleDismiss }) {
   const [open, setOpen] = useState(false)
   const catColor = CATEGORY_COLORS[fm.category] || 'bg-gray-100 text-gray-600'
 
   return (
     <div
-      className={`border rounded-xl transition-all duration-200 cursor-pointer ${open ? 'border-primary/30 bg-purple-50/30' : 'border-gray-200 bg-white hover:border-gray-300'}`}
-      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick() }}
+      className={`border rounded-xl transition-all duration-200 cursor-pointer relative ${open ? 'border-primary/30 bg-purple-50/30' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+      onClick={() => { setOpen(!open); if (!open && onFirstCardClick) onFirstCardClick(); if (showBubble) onBubbleDismiss() }}
     >
+      {showBubble && (
+        <span className="absolute -top-2 -right-2 flex items-center gap-1 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm z-10 animate-pulse pointer-events-none">
+          tap to expand
+        </span>
+      )}
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex items-center gap-2 flex-wrap">
@@ -99,18 +104,25 @@ function FMCard({ fm, onFirstCardClick }) {
 }
 
 export default function FailureModes({ onFirstCardClick }) {
+  const [bubbleDismissed, setBubbleDismissed] = useState(false)
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Failure Modes</h2>
         <p className="text-sm text-muted">
-          Five failure scenarios across all four failure categories. The integration is designed to fail loudly - never silently. <span className="text-primary font-medium">Click any card to expand the full incident detail.</span>
+          Five failure scenarios across all four failure categories. The integration is designed to fail loudly - never silently. <span className="text-gray-400 font-medium">Click any card to expand the full incident detail.</span>
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-        {FAILURE_MODES.map((fm) => (
-          <FMCard key={fm.id} fm={fm} onFirstCardClick={onFirstCardClick} />
+        {FAILURE_MODES.map((fm, i) => (
+          <FMCard
+            key={fm.id}
+            fm={fm}
+            onFirstCardClick={onFirstCardClick}
+            showBubble={!bubbleDismissed && i === 0}
+            onBubbleDismiss={() => setBubbleDismissed(true)}
+          />
         ))}
       </div>
 

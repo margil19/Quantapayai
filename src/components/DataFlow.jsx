@@ -297,7 +297,7 @@ export default function DataFlow({ onFirstTrigger }) {
             <p className="text-sm text-gray-700 leading-relaxed">{STAGES[hoveredStage].tooltip}</p>
           </div>
         ) : (
-          <p className="text-center text-xs text-gray-400 italic pt-3">Hover over any stage to see what it does</p>
+          <p className="text-center text-xs text-accent font-medium pt-3">Hover over any stage to see what it does</p>
         )}
       </div>
 

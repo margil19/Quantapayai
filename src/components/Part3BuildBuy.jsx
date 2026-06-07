@@ -52,13 +52,14 @@ const ROWS = [
 
 export default function Part3BuildBuy({ onFirstCardClick }) {
   const [open, setOpen] = useState(null)
+  const [bubbleDismissed, setBubbleDismissed] = useState(false)
 
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-lg font-semibold text-dark mb-1">Build / Buy / Partner</h2>
         <p className="text-sm text-muted mb-3">
-          Five HRIS integrations evaluated across revenue risk, API quality, and competitive exposure. <span className="text-primary font-medium">Click any row to see the full reasoning behind the decision.</span>
+          Five HRIS integrations evaluated across revenue risk, API quality, and competitive exposure. <span className="text-gray-400 font-medium">Click any row to see the full reasoning behind the decision.</span>
         </p>
         <div className="flex items-start gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 max-w-xl">
           <span className="text-gray-400 text-xs mt-0.5 shrink-0">ⓘ</span>
@@ -69,15 +70,21 @@ export default function Part3BuildBuy({ onFirstCardClick }) {
       </div>
 
       <div className="space-y-2">
-        {ROWS.map((row) => {
+        {ROWS.map((row, i) => {
           const d = DECISIONS[row.decision]
           const isOpen = open === row.hris
+          const showBubble = !bubbleDismissed && i === 0 && !isOpen
           return (
             <div
               key={row.hris}
-              className={`border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${isOpen ? `${d.light} border` : 'border-gray-200 bg-white hover:border-gray-300'}`}
-              onClick={() => { setOpen(isOpen ? null : row.hris); if (!isOpen && onFirstCardClick) onFirstCardClick() }}
+              className={`border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer relative ${isOpen ? `${d.light} border` : 'border-gray-200 bg-white hover:border-gray-300'}`}
+              onClick={() => { setOpen(isOpen ? null : row.hris); if (!isOpen && onFirstCardClick) onFirstCardClick(); if (showBubble) setBubbleDismissed(true) }}
             >
+              {showBubble && (
+                <span className="absolute -top-2 -right-2 flex items-center gap-1 bg-primary text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm z-10 animate-pulse pointer-events-none">
+                  tap to expand
+                </span>
+              )}
               <div className="px-5 py-4 flex items-center gap-4">
                 {/* Left chevron indicator */}
                 <span className={`text-gray-400 transition-transform duration-200 shrink-0 text-xs ${isOpen ? 'rotate-90' : ''}`}>▶</span>

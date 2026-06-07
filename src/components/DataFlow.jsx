@@ -224,10 +224,10 @@ export default function DataFlow({ onFirstTrigger }) {
             return (
               <div key={stage.id} className="flex items-center flex-1 min-w-0">
 
-                {/* Stage box — fixed base height, expands on hover to show description */}
+                {/* Stage box — fixed height always, never resizes */}
                 <div
                   key={`${stage.id}-${active ?? 'none'}`}
-                  className={`flex-1 min-w-0 rounded-xl border-2 select-none transition-colors duration-300 overflow-hidden ${
+                  className={`flex-1 min-w-0 h-20 rounded-xl border-2 select-none transition-colors duration-300 flex flex-col items-center justify-center gap-1 px-1 cursor-default ${
                     isActive
                       ? 'border-primary bg-purple-50'
                       : isPast
@@ -244,21 +244,12 @@ export default function DataFlow({ onFirstTrigger }) {
                   onMouseEnter={() => setHoveredStage(i)}
                   onMouseLeave={() => setHoveredStage(null)}
                 >
-                  {/* Fixed label area — always visible, never moves */}
-                  <div className="h-20 flex flex-col items-center justify-center gap-1 px-1">
-                    <span className={`text-lg leading-none transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
-                      {stage.icon}
-                    </span>
-                    <span className={`text-[11px] font-semibold text-center leading-tight transition-colors duration-300 ${isActive ? 'text-primary' : 'text-dark'}`}>
-                      {stage.label}
-                    </span>
-                  </div>
-                  {/* Hover description — expands below the label */}
-                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${hoveredStage === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="border-t border-gray-100 mx-3 pt-2 pb-3">
-                      <p className="text-[11px] text-muted leading-relaxed text-center">{stage.tooltip}</p>
-                    </div>
-                  </div>
+                  <span className={`text-lg leading-none transition-colors duration-300 ${isActive ? 'text-primary' : isPast ? 'text-purple-400' : 'text-gray-300'}`}>
+                    {stage.icon}
+                  </span>
+                  <span className={`text-[11px] font-semibold text-center leading-tight transition-colors duration-300 ${isActive ? 'text-primary' : 'text-dark'}`}>
+                    {stage.label}
+                  </span>
                 </div>
 
                 {/* Arrow connector */}
@@ -294,7 +285,21 @@ export default function DataFlow({ onFirstTrigger }) {
         </div>
       </div>
 
-      <p className="text-center text-xs text-gray-400 italic -mt-4">Hover over any stage to see what it does</p>
+      {/* Hover description panel — outside overflow container so it never clips */}
+      <div className="min-h-[56px] -mt-4">
+        {hoveredStage !== null ? (
+          <div
+            key={hoveredStage}
+            className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
+            style={{ animation: 'stage-fade-in 0.2s ease-out' }}
+          >
+            <p className="text-xs font-semibold text-gray-500 mb-0.5">{STAGES[hoveredStage].label}</p>
+            <p className="text-sm text-gray-700 leading-relaxed">{STAGES[hoveredStage].tooltip}</p>
+          </div>
+        ) : (
+          <p className="text-center text-xs text-gray-400 italic pt-3">Hover over any stage to see what it does</p>
+        )}
+      </div>
 
       {/* Active event summary */}
       {active && activeStage === STAGES.length - 1 && (

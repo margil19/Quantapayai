@@ -123,7 +123,7 @@ function WelcomeModal({ onDismiss }) {
           Welcome to the QuantapayAI Integration Explorer
         </h2>
         <p className="text-sm text-muted leading-relaxed mb-5">
-          This is a PM take-home case study built as an interactive product - not a PDF.
+          This is a PM take-home case study built as an interactive product.
         </p>
         <p className="text-xs font-semibold text-dark uppercase tracking-wide mb-3">
           Here's how to navigate it:

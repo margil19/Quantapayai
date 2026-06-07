@@ -1,21 +1,18 @@
 import { useState } from 'react'
 
 const FIELDS = [
-  { workday: 'Worker_ID', quantapay: 'employee_external_id', confidence: 98, sample: 'WD-48291', status: 'auto' },
-  { workday: 'Legal_Name_First', quantapay: 'legal_first_name', confidence: 97, sample: 'Sarah', status: 'auto' },
-  { workday: 'Legal_Name_Last', quantapay: 'legal_last_name', confidence: 96, sample: 'Chen', status: 'auto' },
-  { workday: 'Hire_Date', quantapay: 'employment_start_date', confidence: 94, sample: '2025-07-01', status: 'auto' },
-  { workday: 'Annual_Base_Salary', quantapay: 'annual_salary_amount', confidence: 88, sample: '$112,000.00 USD', status: 'suggested',
-    correctOption: 'annual_salary_amount', options: ['annual_salary_amount', 'total_compensation', 'base_pay_rate', 'bonus_amount'] },
-  { workday: 'Worker_Type', quantapay: 'employment_classification', confidence: 79, sample: 'Employee', status: 'suggested',
-    correctOption: 'employment_classification', options: ['employment_classification', 'worker_category', 'contract_type', 'worker_status'] },
-  { workday: 'Work_Location_Country', quantapay: 'work_country', confidence: 72, sample: 'United States', status: 'suggested',
-    correctOption: 'work_country', options: ['work_country', 'home_country', 'tax_jurisdiction', 'office_location'] },
-  { workday: 'Termination_Date', quantapay: 'termination_date', confidence: 55, sample: '—', status: 'flagged',
+  { workday: 'Worker_ID',            quantapay: 'employee_external_id',   confidence: 99, sample: 'WD-48291',        status: 'auto' },
+  { workday: 'Legal_Name_First',     quantapay: 'legal_first_name',        confidence: 98, sample: 'Sarah',           status: 'auto' },
+  { workday: 'Legal_Name_Last',      quantapay: 'legal_last_name',         confidence: 97, sample: 'Chen',            status: 'auto' },
+  { workday: 'Hire_Date',            quantapay: 'employment_start_date',   confidence: 96, sample: '2025-07-01',      status: 'auto' },
+  { workday: 'Annual_Base_Salary',   quantapay: 'annual_salary_amount',    confidence: 96, sample: '$112,000.00 USD', status: 'auto' },
+  { workday: 'Worker_Type',          quantapay: 'employment_classification', confidence: 95, sample: 'Employee',      status: 'auto' },
+  { workday: 'Work_Location_Country', quantapay: 'work_country',           confidence: 95, sample: 'United States',  status: 'auto' },
+  { workday: 'Termination_Date',     quantapay: 'termination_date',        confidence: 52, sample: '—',               status: 'flagged',
     correctOption: 'termination_date', options: ['termination_date', 'last_working_day', 'contract_end_date', 'benefits_end_date'] },
-  { workday: 'Cost_Center_Reference', quantapay: 'cost_center_id', confidence: 41, sample: 'CC-1042-ENG', status: 'flagged',
+  { workday: 'Cost_Center_Reference', quantapay: 'cost_center_id',         confidence: 38, sample: 'CC-1042-ENG',    status: 'flagged',
     correctOption: 'cost_center_id', options: ['cost_center_id', 'department_id', 'cost_allocation_code', 'gl_account'] },
-  { workday: 'Custom_Attr_EOR_Flag', quantapay: null, confidence: 0, sample: 'TRUE', status: 'unknown',
+  { workday: 'Custom_Attr_EOR_Flag', quantapay: null,                      confidence: 0,  sample: 'TRUE',            status: 'unknown',
     correctOption: 'eor_flag', options: ['eor_flag', 'custom_attribute_1', 'compliance_flag', '— skip this field —'] },
 ]
 

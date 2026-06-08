@@ -62,7 +62,7 @@ export default function Part2TrustWarning() {
         <div className="space-y-2 mt-3">
           {[
             ['Does this change affect current-cycle payroll?', 'Yes → Queue for Approval'],
-            ['Is this change irreversible without a statutory consequence?', 'Yes → Queue for Approval'],
+            ['Is this change irreversible and does getting it wrong carry a legal penalty?', 'Yes → Queue for Approval'],
             ['Does QuantapayAI have enough context to act confidently?', 'No → Surface as Suggestion'],
             ['None of the above', '→ Direct Write'],
           ].map(([q, a]) => (
